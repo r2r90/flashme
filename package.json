@@ -1,5 +1,5 @@
 {
-  "name": "tattobook",
+  "name": "flashme",
   "private": true,
   "scripts": {
     "build": "turbo run build",

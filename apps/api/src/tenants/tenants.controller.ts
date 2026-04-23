@@ -1,10 +1,6 @@
 import { Controller, Post, Get, Body, Param } from '@nestjs/common';
 import { TenantsService } from './tenants.service';
-
-class CreateTenantDto {
-  name: string;
-  slug: string;
-}
+import { CreateTenantDto } from './dto/create-tenant.dto';
 
 @Controller('tenants')
 export class TenantsController {

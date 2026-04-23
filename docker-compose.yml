@@ -1,11 +1,11 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: tattobook-db
+    container_name: flashme-db
     environment:
-      POSTGRES_USER: tattobook
-      POSTGRES_PASSWORD: tattobook
-      POSTGRES_DB: tattobook
+      POSTGRES_USER: flashme
+      POSTGRES_PASSWORD: flashme
+      POSTGRES_DB: flashme
     ports:
       - "5432:5432"
     volumes:

@@ -28,14 +28,13 @@
 - [x] Migration BDD init
 - [x] Module Auth (register, login, JWT access/refresh)
 - [x] JWT Strategy + Guard
-- [ ] Tenant onboarding (création studio)
+- [x] Module Tenants (create, findBySlug)
 - [ ] CI/CD GitHub Actions de base
 
-### 🔄 Sprint 2 — Core Booking
-- [ ] Module Flashes (galerie, catalogue, upload image)
+### ✅ Sprint 2 — Core Booking
+- [x] Module Flashes (create, catalogue, findOne, updateStatus)
 - [ ] Module Bookings (créneaux, réservation)
 - [ ] Calendrier artiste
-- [ ] Module Tenants (onboarding studio)
 
 ### ⏳ Sprint 3 — Monétisation
 - [ ] Stripe Connect (onboarding studio)

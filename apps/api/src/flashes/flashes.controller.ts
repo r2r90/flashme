@@ -9,16 +9,8 @@ import {
 } from '@nestjs/common';
 import { FlashesService } from './flashes.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { FlashStatus } from '@prisma/client';
-
-class CreateFlashDto {
-  tenantId: string;
-  artistId: string;
-  title: string;
-  description?: string;
-  imageUrl: string;
-  price: number;
-}
+import { CreateFlashDto } from './dto/create-flash.dto';
+import { UpdateFlashStatusDto } from './dto/update-flash-status.dto';
 
 @Controller('flashes')
 export class FlashesController {
@@ -42,7 +34,7 @@ export class FlashesController {
 
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard)
-  updateStatus(@Param('id') id: string, @Body('status') status: FlashStatus) {
-    return this.flashesService.updateStatus(id, status);
+  updateStatus(@Param('id') id: string, @Body() dto: UpdateFlashStatusDto) {
+    return this.flashesService.updateStatus(id, dto.status);
   }
 }
