@@ -24,6 +24,7 @@ export class AuthService {
 
   async login(email: string, password: string) {
     const user = await this.validateUser(email, password);
+    const { password: _, ...safeUser } = user;
 
     const payload = {
       sub: user.id,
@@ -42,7 +43,7 @@ export class AuthService {
       expiresIn: this.config.get('JWT_REFRESH_EXPIRES_IN'),
     });
 
-    return { accessToken, refreshToken, user };
+    return { accessToken, refreshToken, user: safeUser };
   }
 
   async register(email: string, password: string, tenantId: string) {
