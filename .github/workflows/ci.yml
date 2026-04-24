@@ -2,27 +2,27 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [ main, develop ]
     paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - '.gitignore'
-      - '.env.example'
-      - 'docs/**'
-      - '.vscode/**'
-      - '.idea/**'
-      - '**/*.postman_collection.json'
+      - "**.md"
+      - "**.txt"
+      - ".gitignore"
+      - ".env.example"
+      - "docs/**"
+      - ".vscode/**"
+      - ".idea/**"
+      - "**/*.postman_collection.json"
   pull_request:
-    branches: [main, develop]
+    branches: [ main, develop ]
     paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - '.gitignore'
-      - '.env.example'
-      - 'docs/**'
-      - '.vscode/**'
-      - '.idea/**'
-      - '**/*.postman_collection.json'
+      - "**.md"
+      - "**.txt"
+      - ".gitignore"
+      - ".env.example"
+      - "docs/**"
+      - ".vscode/**"
+      - ".idea/**"
+      - "**/*.postman_collection.json"
 
 jobs:
   lint:
@@ -32,8 +32,17 @@ jobs:
       - uses: pnpm/action-setup@903f9c1a6ebcba6cf41d87230be49611ac97822e
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: 24
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Cache pnpm store
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
       - run: cd packages/database && npx prisma generate
         env:
@@ -47,8 +56,17 @@ jobs:
       - uses: pnpm/action-setup@903f9c1a6ebcba6cf41d87230be49611ac97822e
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: 24
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Cache pnpm store
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
       - run: cd packages/database && npx prisma generate
         env:
@@ -62,8 +80,17 @@ jobs:
       - uses: pnpm/action-setup@903f9c1a6ebcba6cf41d87230be49611ac97822e
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: 24
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Cache pnpm store
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
       - run: cd packages/database && npx prisma generate
         env:
@@ -72,14 +99,23 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, test]
+    needs: [ lint, typecheck, test ]
     steps:
       - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
       - uses: pnpm/action-setup@903f9c1a6ebcba6cf41d87230be49611ac97822e
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: 24
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Cache pnpm store
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile
       - run: cd packages/database && npx prisma generate
         env:
