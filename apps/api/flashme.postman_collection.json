@@ -214,6 +214,32 @@
               "raw": "{\"status\": \"CONFIRMED\"}"
             }
           }
+        },
+        {
+          "name": "Storage",
+          "item": [
+            {
+              "name": "Get Presigned Upload URL",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/storage/presigned-url",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"folder\": \"flashes\", \"mimeType\": \"image/jpeg\"}"
+                }
+              }
+            }
+          ]
         }
       ]
     }
