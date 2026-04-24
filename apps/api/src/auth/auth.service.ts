@@ -24,7 +24,7 @@ export class AuthService {
 
   async login(email: string, password: string) {
     const user = await this.validateUser(email, password);
-    const { password: _, ...safeUser } = user;
+    const { password: _password, ...safeUser } = user;
 
     const payload = {
       sub: user.id,
@@ -48,7 +48,7 @@ export class AuthService {
 
   async register(email: string, password: string, tenantId: string) {
     const hashed = await bcrypt.hash(password, 10);
-    const user = await this.usersService.create({
+    await this.usersService.create({
       email,
       password: hashed,
       tenantId,
