@@ -7,13 +7,13 @@ import { PrismaService } from '../prisma/prisma.service';
 import { BookingStatus, FlashStatus } from '@prisma/client';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class BookingsService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateBookingDto, tenantId: string) {
-    // Check flash exists and is available
     const flash = await this.prisma.flash.findUnique({
       where: { id: dto.flashId },
     });
@@ -23,25 +23,34 @@ export class BookingsService {
       throw new BadRequestException('Flash is not available');
     }
 
-    // Create booking and mark flash as booked atomically
-    const [booking] = await this.prisma.$transaction([
-      this.prisma.booking.create({
-        data: {
-          tenantId,
-          clientId: dto.clientId,
-          flashId: dto.flashId,
-          scheduledAt: new Date(dto.scheduledAt),
-          depositAmount: Math.round(flash.price * 0.3), // 30% deposit
-          status: BookingStatus.PENDING,
-        },
-      }),
-      this.prisma.flash.update({
-        where: { id: dto.flashId },
-        data: { status: FlashStatus.BOOKED },
-      }),
-    ]);
+    try {
+      const [booking] = await this.prisma.$transaction([
+        this.prisma.booking.create({
+          data: {
+            tenantId,
+            clientId: dto.clientId,
+            flashId: dto.flashId,
+            scheduledAt: new Date(dto.scheduledAt),
+            depositAmount: Math.round(flash.price * 0.3),
+            status: BookingStatus.PENDING,
+          },
+        }),
+        this.prisma.flash.update({
+          where: { id: dto.flashId },
+          data: { status: FlashStatus.BOOKED },
+        }),
+      ]);
 
-    return booking;
+      return booking;
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new BadRequestException('Flash is already booked');
+      }
+      throw error;
+    }
   }
 
   async findAllByArtist(artistId: string) {
