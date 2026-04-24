@@ -14,10 +14,14 @@ model Tenant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users     User[]
-  artists   Artist[]
-  flashes   Flash[]
-  bookings  Booking[]
+  // Stripe Connect — nullable car rempli après l'onboarding
+  stripeAccountId      String? // acct_xxx — ID du compte Connect du studio
+  stripeOnboardingDone Boolean @default(false)
+
+  users    User[]
+  artists  Artist[]
+  flashes  Flash[]
+  bookings Booking[]
 }
 
 // ── USER ────────────────────────────────────────────────
@@ -30,9 +34,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
-  artist    Artist?
-  bookings  Booking[]
+  // Stripe Customer — créé à la première réservation du client
+  stripeCustomerId String? // cus_xxx — permet de réutiliser les moyens de paiement
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id])
+  artist   Artist?
+  bookings Booking[]
 }
 
 enum Role {
@@ -50,9 +57,9 @@ model Artist {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-  flashes   Flash[]
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  flashes Flash[]
 }
 
 // ── FLASH ────────────────────────────────────────────────
@@ -63,14 +70,14 @@ model Flash {
   title       String
   description String?
   imageUrl    String
-  price       Int         // en centimes
+  price       Int // en centimes (ex: 5000 = 50€)
   status      FlashStatus @default(AVAILABLE)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
-  tenant      Tenant      @relation(fields: [tenantId], references: [id])
-  artist      Artist      @relation(fields: [artistId], references: [id])
-  booking     Booking?
+  tenant  Tenant   @relation(fields: [tenantId], references: [id])
+  artist  Artist   @relation(fields: [artistId], references: [id])
+  booking Booking?
 }
 
 enum FlashStatus {
@@ -87,13 +94,18 @@ model Booking {
   flashId       String        @unique
   scheduledAt   DateTime
   status        BookingStatus @default(PENDING)
-  depositAmount Int           // en centimes
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  depositAmount Int // en centimes — 30% du prix du flash
 
-  tenant        Tenant        @relation(fields: [tenantId], references: [id])
-  client        User          @relation(fields: [clientId], references: [id])
-  flash         Flash         @relation(fields: [flashId], references: [id])
+  // Stripe Payment — nullable car rempli après le paiement
+  stripePaymentIntentId String? // pi_xxx — pour tracker et capturer le paiement
+  depositPaid           Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  client User   @relation(fields: [clientId], references: [id])
+  flash  Flash  @relation(fields: [flashId], references: [id])
 }
 
 enum BookingStatus {
