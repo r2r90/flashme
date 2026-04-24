@@ -44,6 +44,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile --prefer-offline
+      - run: cd packages/database && npx prisma generate
+        env:
+          DATABASE_URL: postgresql://flashme:flashme@localhost:5432/flashme
       - run: pnpm --filter api lint
 
   typecheck:
@@ -65,6 +68,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
       - run: pnpm install --frozen-lockfile --prefer-offline
+      - run: cd packages/database && npx prisma generate
+        env:
+          DATABASE_URL: postgresql://flashme:flashme@localhost:5432/flashme
       - run: pnpm --filter api exec tsc --noEmit
 
   test:
