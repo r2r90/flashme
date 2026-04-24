@@ -1,0 +1,221 @@
+{
+  "info": {
+    "name": "FlashMe API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"test@test.com\", \"password\": \"password123\", \"tenantId\": \"\"}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('token', pm.response.json().accessToken)"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"test@test.com\", \"password\": \"password123\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tenants",
+      "item": [
+        {
+          "name": "Create Tenant",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/tenants",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Ink Society\", \"slug\": \"ink-society\"}"
+            }
+          }
+        },
+        {
+          "name": "Get Tenant by Slug",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tenants/ink-society"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Flashes",
+      "item": [
+        {
+          "name": "Create Flash",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/flashes",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"tenantId\": \"\", \"artistId\": \"\", \"title\": \"Dragon japonais\", \"imageUrl\": \"https://placehold.co/400x400\", \"price\": 35000}"
+            }
+          }
+        },
+        {
+          "name": "Get Flashes by Tenant",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/flashes/tenant/:tenantId",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Flash by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/flashes/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/bookings",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"flashId\": \"\", \"clientId\": \"\", \"scheduledAt\": \"2026-05-15T14:00:00.000Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Get Bookings by Artist",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/bookings/artist/:artistId",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Bookings by Client",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/bookings/client/:clientId",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update Booking",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/bookings/:id",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\": \"CONFIRMED\"}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
