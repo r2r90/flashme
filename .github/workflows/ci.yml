@@ -2,45 +2,86 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - '.gitignore'
+      - '.env.example'
+      - 'docs/**'
+      - '.vscode/**'
+      - '.idea/**'
+      - '**/*.postman_collection.json'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - '.gitignore'
+      - '.env.example'
+      - 'docs/**'
+      - '.vscode/**'
+      - '.idea/**'
+      - '**/*.postman_collection.json'
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+      - uses: pnpm/action-setup@903f9c1a6ebcba6cf41d87230be49611ac97822e
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Generate Prisma Client
-        run: cd packages/database && npx prisma generate
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: cd packages/database && npx prisma generate
         env:
           DATABASE_URL: postgresql://flashme:flashme@localhost:5432/flashme
+      - run: pnpm --filter api lint
 
-      - name: Lint
-        run: pnpm --filter api lint
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+      - uses: pnpm/action-setup@903f9c1a6ebcba6cf41d87230be49611ac97822e
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: cd packages/database && npx prisma generate
+        env:
+          DATABASE_URL: postgresql://flashme:flashme@localhost:5432/flashme
+      - run: pnpm --filter api exec tsc --noEmit
 
-      - name: Type check
-        run: pnpm --filter api exec tsc --noEmit
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+      - uses: pnpm/action-setup@903f9c1a6ebcba6cf41d87230be49611ac97822e
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: cd packages/database && npx prisma generate
+        env:
+          DATABASE_URL: postgresql://flashme:flashme@localhost:5432/flashme
+      - run: pnpm --filter api test
 
-      - name: Test
-        run: pnpm --filter api test
-
-      - name: Build
-        run: pnpm --filter api build
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, test]
+    steps:
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+      - uses: pnpm/action-setup@903f9c1a6ebcba6cf41d87230be49611ac97822e
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: cd packages/database && npx prisma generate
+        env:
+          DATABASE_URL: postgresql://flashme:flashme@localhost:5432/flashme
+      - run: pnpm --filter api build
