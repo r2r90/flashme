@@ -43,10 +43,7 @@ jobs:
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
-      - run: cd packages/database && npx prisma generate
-        env:
-          DATABASE_URL: postgresql://flashme:flashme@localhost:5432/flashme
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - run: pnpm --filter api lint
 
   typecheck:
@@ -67,10 +64,7 @@ jobs:
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
-      - run: cd packages/database && npx prisma generate
-        env:
-          DATABASE_URL: postgresql://flashme:flashme@localhost:5432/flashme
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - run: pnpm --filter api exec tsc --noEmit
 
   test:
@@ -91,7 +85,7 @@ jobs:
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - run: cd packages/database && npx prisma generate
         env:
           DATABASE_URL: postgresql://flashme:flashme@localhost:5432/flashme
@@ -116,7 +110,7 @@ jobs:
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --prefer-offline
       - run: cd packages/database && npx prisma generate
         env:
           DATABASE_URL: postgresql://flashme:flashme@localhost:5432/flashme
