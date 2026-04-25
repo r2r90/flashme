@@ -20,7 +20,7 @@ import { Role } from '@prisma/client';
 import { CreatePaymentIntentDto } from './dto/create-payment-intent.dto';
 
 interface JwtPayload {
-  sub: string;
+  id: string;
   email: string;
   role: Role;
   tenantId: string;
@@ -59,7 +59,7 @@ export class StripeController {
   ) {
     return this.stripeService.createBookingPaymentIntent({
       bookingId: dto.bookingId,
-      userId: user.sub,
+      userId: user.id,
       userEmail: user.email,
     });
   }

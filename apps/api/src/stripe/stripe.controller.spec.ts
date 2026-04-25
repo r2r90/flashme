@@ -38,7 +38,7 @@ describe('StripeController', () => {
   describe('startOnboarding', () => {
     it('should return an onboarding URL for the current owner tenant', async () => {
       const user = {
-        sub: 'user-1',
+        id: 'user-1',
         email: 'owner@flashme.test',
         role: Role.OWNER,
         tenantId: 'tenant-1',
@@ -62,7 +62,7 @@ describe('StripeController', () => {
   describe('createPaymentIntent', () => {
     it('should create a payment intent for the current client booking', async () => {
       const user = {
-        sub: 'client-1',
+        id: 'client-1',
         email: 'client@flashme.test',
         role: Role.CLIENT,
         tenantId: 'tenant-1',

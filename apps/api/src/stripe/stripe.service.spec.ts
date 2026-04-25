@@ -277,6 +277,10 @@ describe('StripeService', () => {
         currency: 'eur',
         capture_method: 'automatic',
         customer: 'cus_existing',
+        automatic_payment_methods: {
+          enabled: true,
+          allow_redirects: 'never',
+        },
         transfer_data: {
           destination: 'acct_test_123',
         },

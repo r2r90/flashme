@@ -236,6 +236,10 @@ export class StripeService {
       currency: 'eur',
       capture_method: 'automatic',
       customer: params.stripeCustomerId,
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'never',
+      },
       transfer_data: {
         destination: params.stripeAccountId,
       },

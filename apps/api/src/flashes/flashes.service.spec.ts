@@ -24,6 +24,9 @@ const mockPrismaService = {
     findUnique: jest.fn(),
     update: jest.fn(),
   },
+  artist: {
+    findFirst: jest.fn(),
+  },
 };
 
 describe('FlashesService', () => {
@@ -47,6 +50,10 @@ describe('FlashesService', () => {
 
   describe('create', () => {
     it('should create a flash', async () => {
+      mockPrismaService.artist.findFirst.mockResolvedValue({
+        id: 'artist-id-123',
+      });
+
       mockPrismaService.flash.create.mockResolvedValue(mockFlash);
 
       const result = await service.create({
@@ -57,8 +64,42 @@ describe('FlashesService', () => {
         price: 35000,
       });
 
+      expect(mockPrismaService.artist.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: 'artist-id-123',
+          tenantId: 'tenant-id-123',
+        },
+        select: { id: true },
+      });
+
+      expect(mockPrismaService.flash.create).toHaveBeenCalledWith({
+        data: {
+          tenantId: 'tenant-id-123',
+          artistId: 'artist-id-123',
+          title: 'Dragon japonais',
+          imageUrl: 'https://placehold.co/400x400',
+          price: 35000,
+        },
+      });
+
       expect(result.title).toBe('Dragon japonais');
       expect(result.status).toBe(FlashStatus.AVAILABLE);
+    });
+
+    it('should throw BadRequestException when artist does not exist for tenant', async () => {
+      mockPrismaService.artist.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.create({
+          tenantId: 'tenant-id-123',
+          artistId: 'artist-id-123',
+          title: 'Dragon japonais',
+          imageUrl: 'https://placehold.co/400x400',
+          price: 35000,
+        }),
+      ).rejects.toThrow('Artist does not exist for this tenant');
+
+      expect(mockPrismaService.flash.create).not.toHaveBeenCalled();
     });
   });
 
@@ -90,7 +131,35 @@ describe('FlashesService', () => {
   });
 
   describe('updateStatus', () => {
+    it('should throw NotFoundException when updating a non-existent flash', async () => {
+      mockPrismaService.flash.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.updateStatus('missing-id', FlashStatus.BOOKED),
+      ).rejects.toThrow(NotFoundException);
+
+      expect(mockPrismaService.flash.update).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException when trying to update completed flash', async () => {
+      mockPrismaService.flash.findUnique.mockResolvedValue({
+        id: 'flash-id-123',
+        status: FlashStatus.DONE,
+      });
+
+      await expect(
+        service.updateStatus('flash-id-123', FlashStatus.BOOKED),
+      ).rejects.toThrow('Cannot update a completed flash');
+
+      expect(mockPrismaService.flash.update).not.toHaveBeenCalled();
+    });
+
     it('should update flash status', async () => {
+      mockPrismaService.flash.findUnique.mockResolvedValue({
+        id: 'flash-id-123',
+        status: FlashStatus.AVAILABLE,
+      });
+
       mockPrismaService.flash.update.mockResolvedValue({
         ...mockFlash,
         status: FlashStatus.BOOKED,
@@ -100,6 +169,7 @@ describe('FlashesService', () => {
         'flash-id-123',
         FlashStatus.BOOKED,
       );
+
       expect(result.status).toBe(FlashStatus.BOOKED);
     });
   });
