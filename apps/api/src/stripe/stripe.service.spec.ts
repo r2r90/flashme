@@ -275,7 +275,7 @@ describe('StripeService', () => {
       expect(stripePaymentIntentsCreateMock).toHaveBeenCalledWith({
         amount: 1500,
         currency: 'eur',
-        capture_method: 'manual',
+        capture_method: 'automatic',
         customer: 'cus_existing',
         transfer_data: {
           destination: 'acct_test_123',
