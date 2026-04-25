@@ -84,4 +84,18 @@ export class BookingsService {
       },
     });
   }
+
+  async findOneWithDetails(id: string) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+      include: {
+        flash: true,
+        tenant: true,
+        client: true,
+      },
+    });
+
+    if (!booking) throw new NotFoundException('Booking not found');
+    return booking;
+  }
 }

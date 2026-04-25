@@ -7,6 +7,7 @@ import { TenantsModule } from './tenants/tenants.module';
 import { FlashesModule } from './flashes/flashes.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { StorageModule } from './storage/storage.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { StorageModule } from './storage/storage.module';
     FlashesModule,
     BookingsModule,
     StorageModule,
+    StripeModule,
   ],
 })
 export class AppModule {}
