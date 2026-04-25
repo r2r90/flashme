@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { BookingsService } from '../bookings/bookings.service';
 import { TenantsService } from '../tenants/tenants.service';
+import { BookingStatus, FlashStatus } from '@prisma/client';
 import Stripe from 'stripe';
 
 type StripeClient = InstanceType<typeof Stripe>;
@@ -82,6 +83,14 @@ export class StripeService {
       params.bookingId,
     );
 
+    if (booking.depositPaid) {
+      throw new BadRequestException('Deposit already paid');
+    }
+
+    if (booking.stripePaymentIntentId) {
+      throw new BadRequestException('Payment already initiated');
+    }
+
     if (booking.clientId !== params.userId) {
       throw new ForbiddenException('You can only pay for your own bookings');
     }
@@ -129,6 +138,10 @@ export class StripeService {
     switch (event.type) {
       case 'payment_intent.succeeded':
         await this.onPaymentIntentSucceeded(event.data.object as PaymentIntent);
+        break;
+
+      case 'payment_intent.payment_failed':
+        this.onPaymentIntentFailed(event.data.object as PaymentIntent);
         break;
 
       case 'account.updated':
@@ -221,7 +234,7 @@ export class StripeService {
     const paymentIntent = await this.stripe.paymentIntents.create({
       amount: depositAmount,
       currency: 'eur',
-      capture_method: 'manual',
+      capture_method: 'automatic',
       customer: params.stripeCustomerId,
       transfer_data: {
         destination: params.stripeAccountId,
@@ -253,33 +266,63 @@ export class StripeService {
   private async onPaymentIntentSucceeded(
     paymentIntent: PaymentIntent,
   ): Promise<void> {
-    await this.prisma.booking.updateMany({
+    const booking = await this.prisma.booking.findFirst({
       where: {
         stripePaymentIntentId: paymentIntent.id,
       },
-      data: {
+      select: {
+        id: true,
+        flashId: true,
         depositPaid: true,
       },
     });
+
+    if (!booking) {
+      this.logger.warn(
+        `No booking found for PaymentIntent ${paymentIntent.id}`,
+      );
+      return;
+    }
+
+    if (booking.depositPaid) {
+      this.logger.warn(`PaymentIntent ${paymentIntent.id} already processed`);
+      return;
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.booking.update({
+        where: { id: booking.id },
+        data: {
+          depositPaid: true,
+          status: BookingStatus.CONFIRMED,
+        },
+      }),
+      this.prisma.flash.update({
+        where: { id: booking.flashId },
+        data: {
+          status: FlashStatus.BOOKED,
+        },
+      }),
+    ]);
 
     this.logger.log(`Payment succeeded for PaymentIntent ${paymentIntent.id}`);
   }
 
   private async onAccountUpdated(account: Account): Promise<void> {
-    if (!account.charges_enabled) {
-      return;
-    }
-
-    await this.prisma.tenant.updateMany({
+    await this.prisma.tenant.update({
       where: {
         stripeAccountId: account.id,
       },
       data: {
-        stripeOnboardingDone: true,
+        stripeChargesEnabled: account.charges_enabled,
+        stripePayoutsEnabled: account.payouts_enabled,
+        stripeDetailsSubmitted: account.details_submitted,
+        stripeOnboardingDone:
+          account.charges_enabled && account.details_submitted,
       },
     });
 
-    this.logger.log(`Stripe onboarding completed for account ${account.id}`);
+    this.logger.log(`Stripe account updated ${account.id}`);
   }
 
   private constructWebhookEvent(
@@ -305,9 +348,8 @@ export class StripeService {
     }
   }
 
-  async capturePaymentIntent(paymentIntentId: string): Promise<void> {
-    await this.stripe.paymentIntents.capture(paymentIntentId);
-    this.logger.log(`Captured PaymentIntent ${paymentIntentId}`);
+  private onPaymentIntentFailed(paymentIntent: PaymentIntent): void {
+    this.logger.warn(`Payment failed for PaymentIntent ${paymentIntent.id}`);
   }
 
   async cancelPaymentIntent(paymentIntentId: string): Promise<void> {

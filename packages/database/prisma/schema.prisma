@@ -15,8 +15,11 @@ model Tenant {
   updatedAt DateTime @updatedAt
 
   // Stripe Connect — nullable car rempli après l'onboarding
-  stripeAccountId      String? // acct_xxx — ID du compte Connect du studio
+  stripeAccountId String? @unique
   stripeOnboardingDone Boolean @default(false)
+  stripeChargesEnabled  Boolean @default(false)
+  stripePayoutsEnabled  Boolean @default(false)
+  stripeDetailsSubmitted Boolean @default(false)
 
   users    User[]
   artists  Artist[]
