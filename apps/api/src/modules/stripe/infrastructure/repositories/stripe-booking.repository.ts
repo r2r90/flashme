@@ -1,8 +1,8 @@
-import { PrismaService } from './../../../../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { BookingStatus, FlashStatus } from '@prisma/client';
 
 import { IStripeBookingRepository } from '../../domain/interfaces/stripe-booking.repository.interface';
+import { PrismaService } from '@/shared/prisma/prisma.service';
 
 @Injectable()
 export class StripeBookingRepository implements IStripeBookingRepository {

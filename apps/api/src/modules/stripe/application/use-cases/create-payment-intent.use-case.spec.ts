@@ -5,7 +5,7 @@ import { CreatePaymentIntentUseCase } from './create-payment-intent.use-case';
 import { StripeClientService } from '../../infrastructure/stripe-client.service';
 import { StripeBookingRepository } from '../../infrastructure/repositories/stripe-booking.repository';
 import { StripeUserRepository } from '../../infrastructure/repositories/stripe-user.repository';
-import { BookingsService } from '../../../../bookings/bookings.service';
+import { BookingsService } from '@/modules/bookings/bookings.service';
 
 const stripePaymentIntentsCreateMock = jest.fn();
 const stripeCustomersCreateMock = jest.fn();

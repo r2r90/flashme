@@ -11,12 +11,12 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../auth/guards/roles.guard';
-import { Roles } from '../../auth/decorators/roles.decorator';
-import { CurrentUser } from '../../auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
+import { RolesGuard } from '../../shared/guards/roles.guard';
+import { Roles } from '../../shared/decorators/roles.decorator';
+import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 import { Role } from '@prisma/client';
-import type { AuthUser } from '../../auth/decorators/current-user.decorator';
+import type { AuthUser } from '../../shared/decorators/current-user.decorator';
 import { StartOnboardingUseCase } from './application/use-cases/start-onboarding.use-case';
 import { CreatePaymentIntentUseCase } from './application/use-cases/create-payment-intent.use-case';
 import { HandleWebhookUseCase } from './application/use-cases/handle-webhook.use-case';

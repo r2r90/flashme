@@ -2,9 +2,9 @@ import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { StartOnboardingUseCase } from './start-onboarding.use-case';
-import { TenantsService } from '../../../../tenants/tenants.service';
 import { StripeClientService } from '../../infrastructure/stripe-client.service';
 import { StripeTenantRepository } from '../../infrastructure/repositories/stripe-tenant.repository';
+import { TenantsService } from '@/modules/tenants/tenants.service';
 
 const stripeAccountsCreateMock = jest.fn();
 const stripeAccountLinksCreateMock = jest.fn();

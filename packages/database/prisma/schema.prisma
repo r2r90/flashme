@@ -2,6 +2,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./ERD.svg"
+}
+
 datasource db {
   provider = "postgresql"
 }
@@ -15,10 +20,10 @@ model Tenant {
   updatedAt DateTime @updatedAt
 
   // Stripe Connect — nullable car rempli après l'onboarding
-  stripeAccountId String? @unique
-  stripeOnboardingDone Boolean @default(false)
-  stripeChargesEnabled  Boolean @default(false)
-  stripePayoutsEnabled  Boolean @default(false)
+  stripeAccountId        String? @unique
+  stripeOnboardingDone   Boolean @default(false)
+  stripeChargesEnabled   Boolean @default(false)
+  stripePayoutsEnabled   Boolean @default(false)
   stripeDetailsSubmitted Boolean @default(false)
 
   users    User[]
@@ -30,7 +35,7 @@ model Tenant {
 // ── USER ────────────────────────────────────────────────
 model User {
   id        String   @id @default(uuid())
-  tenantId  String
+  tenantId  String?
   email     String   @unique
   password  String
   role      Role     @default(CLIENT)
@@ -40,7 +45,7 @@ model User {
   // Stripe Customer — créé à la première réservation du client
   stripeCustomerId String? // cus_xxx — permet de réutiliser les moyens de paiement
 
-  tenant   Tenant    @relation(fields: [tenantId], references: [id])
+  tenant   Tenant?   @relation(fields: [tenantId], references: [id])
   artist   Artist?
   bookings Booking[]
 }

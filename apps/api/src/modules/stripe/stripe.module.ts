@@ -7,19 +7,17 @@ import { StripeUserRepository } from './infrastructure/repositories/stripe-user.
 import { StartOnboardingUseCase } from './application/use-cases/start-onboarding.use-case';
 import { CreatePaymentIntentUseCase } from './application/use-cases/create-payment-intent.use-case';
 import { HandleWebhookUseCase } from './application/use-cases/handle-webhook.use-case';
-import { BookingsModule } from 'src/bookings/bookings.module';
-import { TenantsModule } from 'src/tenants/tenants.module';
+import { BookingsModule } from '@/modules/bookings/bookings.module';
+import { TenantsModule } from '@/modules/tenants/tenants.module';
 
 @Module({
   imports: [BookingsModule, TenantsModule],
   controllers: [StripeController],
   providers: [
-    // Infrastructure
     StripeClientService,
     StripeBookingRepository,
     StripeTenantRepository,
     StripeUserRepository,
-    // Use Cases
     StartOnboardingUseCase,
     CreatePaymentIntentUseCase,
     HandleWebhookUseCase,

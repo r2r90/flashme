@@ -1,13 +1,13 @@
+import { BookingsService } from '@/modules/bookings/bookings.service';
 import {
   Injectable,
   BadRequestException,
   ForbiddenException,
   Logger,
 } from '@nestjs/common';
-import { StripeClientService } from '../../infrastructure/stripe-client.service';
-import { StripeBookingRepository } from '../../infrastructure/repositories/stripe-booking.repository';
 import { StripeUserRepository } from '../../infrastructure/repositories/stripe-user.repository';
-import { BookingsService } from '../../../../bookings/bookings.service';
+import { StripeBookingRepository } from '../../infrastructure/repositories/stripe-booking.repository';
+import { StripeClientService } from '../../infrastructure/stripe-client.service';
 
 @Injectable()
 export class CreatePaymentIntentUseCase {

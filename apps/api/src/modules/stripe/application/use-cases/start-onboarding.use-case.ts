@@ -1,9 +1,8 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
 import { StripeClientService } from '../../infrastructure/stripe-client.service';
+import { TenantsService } from '@/modules/tenants/tenants.service';
 import { StripeTenantRepository } from '../../infrastructure/repositories/stripe-tenant.repository';
-import { TenantsService } from '../../../../tenants/tenants.service';
 
 @Injectable()
 export class StartOnboardingUseCase {

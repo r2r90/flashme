@@ -1,6 +1,6 @@
-import { PrismaService } from './../../../../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import type { IStripeTenantRepository } from '../../domain/interfaces/stripe-tenant.repository.interface';
+import { PrismaService } from '@/shared/prisma/prisma.service';
 
 @Injectable()
 export class StripeTenantRepository implements IStripeTenantRepository {

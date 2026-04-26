@@ -67,3 +67,7 @@ pnpm dev          # Start all apps
 pnpm test         # Run tests (from apps/api)
 pnpm lint         # Lint all packages
 ```
+
+## Database Schema
+
+![ERD](./packages/database/prisma/ERD.svg)

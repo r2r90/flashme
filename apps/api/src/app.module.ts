@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from './prisma/prisma.module';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { TenantsModule } from './tenants/tenants.module';
-import { FlashesModule } from './flashes/flashes.module';
-import { BookingsModule } from './bookings/bookings.module';
-import { StorageModule } from './storage/storage.module';
-import { StripeModule } from './modules/stripe/stripe.module';
+
+import { StripeModule } from '@/modules/stripe/stripe.module';
+import { PrismaModule } from '@/shared/prisma/prisma.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { TenantsModule } from './modules/tenants/tenants.module';
+import { FlashesModule } from './modules/flashes/flashes.module';
+import { BookingsModule } from './modules/bookings/bookings.module';
+import { StorageModule } from './modules/storage/storage.module';
 
 @Module({
   imports: [
