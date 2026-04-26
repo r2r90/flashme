@@ -7,7 +7,7 @@ import { TenantsModule } from './tenants/tenants.module';
 import { FlashesModule } from './flashes/flashes.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { StorageModule } from './storage/storage.module';
-import { StripeModule } from './stripe/stripe.module';
+import { StripeModule } from './modules/stripe/stripe.module';
 
 @Module({
   imports: [
