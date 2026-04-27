@@ -12,6 +12,7 @@ const mockUser = {
   password: 'hashedpassword',
   role: 'CLIENT',
   tenantId: 'tenant-id-123',
+  emailVerifiedAt: new Date(),
   createdAt: new Date(),
   updatedAt: new Date(),
 };
@@ -92,6 +93,16 @@ describe('AuthService', () => {
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
       expect(result.user).not.toHaveProperty('password');
+    });
+
+    it('should throw UnauthorizedException when email is not verified', async () => {
+      const unverifiedUser = { ...mockUser, emailVerifiedAt: null };
+      mockUsersService.findByEmail.mockResolvedValue(unverifiedUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      await expect(
+        service.login('test@test.com', 'password123'),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 });

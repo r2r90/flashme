@@ -43,6 +43,11 @@ model User {
   tenant   Tenant?   @relation(fields: [tenantId], references: [id])
   artist   Artist?
   bookings Booking[]
+
+  // Email verification — null = not verified, date = verified at
+  emailVerifiedAt          DateTime?
+  emailVerificationToken   String?   @unique
+  emailVerificationExpires DateTime?
 }
 
 enum Role {

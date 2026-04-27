@@ -7,9 +7,9 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
-    private config: ConfigService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly config: ConfigService,
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -24,6 +24,14 @@ export class AuthService {
 
   async login(email: string, password: string) {
     const user = await this.validateUser(email, password);
+
+    // Block login if email is not verified
+    if (!user.emailVerifiedAt) {
+      throw new UnauthorizedException(
+        'Please verify your email before logging in',
+      );
+    }
+
     const { password: _password, ...safeUser } = user;
 
     const payload = {
@@ -44,16 +52,5 @@ export class AuthService {
     });
 
     return { accessToken, refreshToken, user: safeUser };
-  }
-
-  async register(email: string, password: string, tenantId: string) {
-    const hashed = await bcrypt.hash(password, 10);
-    await this.usersService.create({
-      email,
-      password: hashed,
-      tenantId,
-    });
-
-    return this.login(email, password);
   }
 }
