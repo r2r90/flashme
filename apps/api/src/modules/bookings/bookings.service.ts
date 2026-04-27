@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
@@ -37,7 +41,7 @@ export class BookingsService {
   }
 
   async findAllByTenant(tenantId: string | null) {
-    if (!tenantId) return [];
+    if (!tenantId) throw new BadRequestException('User has no tenant');
     return this.prisma.booking.findMany({
       where: { tenantId },
       include: {

@@ -34,6 +34,9 @@ export class StripeController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.OWNER)
   async onboarding(@CurrentUser() user: AuthUser) {
+    if (!user.tenantId) {
+      throw new ForbiddenException('No tenant associated with this account');
+    }
     const onboardingUrl = await this.startOnboarding.execute({
       tenantId: user.tenantId,
       email: user.email,
