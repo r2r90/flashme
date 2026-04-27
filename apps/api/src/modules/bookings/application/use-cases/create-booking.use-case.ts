@@ -3,22 +3,24 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { BookingStatus, FlashStatus, Prisma } from '@prisma/client';
+import { Booking, BookingStatus, FlashStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '@/shared/prisma/prisma.service';
-import { CreateBookingDto } from '../../dto/create-booking.dto';
 import { calculateDeposit } from '../../domain/booking-policy';
+import { CreateBookingCommand } from '@/shared/types';
 
 @Injectable()
 export class CreateBookingUseCase {
   constructor(private readonly prisma: PrismaService) {}
 
-  async execute(dto: CreateBookingDto, clientId: string) {
-    // Verify flash belongs to the tenant and is available
-    const flash = await this.prisma.flash.findFirst({
-      where: { id: dto.flashId, tenantId: dto.tenantId },
+  async execute(command: CreateBookingCommand): Promise<Booking> {
+    const flash = await this.prisma.flash.findUnique({
+      where: { id: command.flashId },
     });
 
-    if (!flash) throw new NotFoundException('Flash not found in this studio');
+    if (!flash) {
+      throw new NotFoundException('Flash not found');
+    }
+
     if (flash.status !== FlashStatus.AVAILABLE) {
       throw new BadRequestException('Flash is not available');
     }
@@ -27,16 +29,16 @@ export class CreateBookingUseCase {
       const [booking] = await this.prisma.$transaction([
         this.prisma.booking.create({
           data: {
-            tenantId: dto.tenantId,
-            clientId,
-            flashId: dto.flashId,
-            scheduledAt: new Date(dto.scheduledAt),
+            tenantId: flash.tenantId,
+            clientId: command.clientId,
+            flashId: command.flashId,
+            scheduledAt: new Date(command.scheduledAt),
             depositAmount: calculateDeposit(flash.price),
             status: BookingStatus.PENDING,
           },
         }),
         this.prisma.flash.update({
-          where: { id: dto.flashId },
+          where: { id: command.flashId },
           data: { status: FlashStatus.BOOKED },
         }),
       ]);

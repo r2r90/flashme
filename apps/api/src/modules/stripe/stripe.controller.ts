@@ -16,11 +16,11 @@ import { RolesGuard } from '../../shared/guards/roles.guard';
 import { Roles } from '../../shared/decorators/roles.decorator';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 import { Role } from '@prisma/client';
-import type { AuthUser } from '../../shared/decorators/current-user.decorator';
 import { StartOnboardingUseCase } from './application/use-cases/start-onboarding.use-case';
 import { CreatePaymentIntentUseCase } from './application/use-cases/create-payment-intent.use-case';
 import { HandleWebhookUseCase } from './application/use-cases/handle-webhook.use-case';
 import { CreatePaymentIntentDto } from './dto/create-payment-intent.dto';
+import type { AuthUser } from '@/shared/types';
 
 @Controller('stripe')
 export class StripeController {

@@ -7,6 +7,7 @@ import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { RegisterUseCase } from './application/use-cases/register.use-case';
 import { VerifyEmailUseCase } from './application/use-cases/verify-email.use-case';
 import { ResendVerificationUseCase } from './application/use-cases/resend-verification.use-case';
+import { LoginResponse, MessageResponse } from '@/shared/types';
 
 @Controller('auth')
 export class AuthController {
@@ -18,13 +19,17 @@ export class AuthController {
   ) {}
 
   @Post('login')
-  login(@Body() dto: LoginDto) {
+  login(@Body() dto: LoginDto): Promise<LoginResponse> {
     return this.authService.login(dto.email, dto.password);
   }
 
   @Post('register')
-  register(@Body() dto: RegisterDto) {
-    return this.registerUseCase.execute(dto.email, dto.password, dto.tenantId);
+  register(@Body() dto: RegisterDto): Promise<MessageResponse> {
+    return this.registerUseCase.execute({
+      email: dto.email,
+      password: dto.password,
+      tenantId: dto.tenantId,
+    });
   }
 
   @Post('verify-email')

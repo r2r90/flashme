@@ -7,7 +7,7 @@ import { CreatePaymentIntentUseCase } from './application/use-cases/create-payme
 import { HandleWebhookUseCase } from './application/use-cases/handle-webhook.use-case';
 import type { RawBodyRequest } from '@nestjs/common';
 import type { Request } from 'express';
-import type { AuthUser } from '../../shared/decorators/current-user.decorator';
+import { AuthUser } from '@/shared/types';
 
 describe('StripeController', () => {
   let controller: StripeController;

@@ -8,6 +8,7 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { CreateBookingUseCase } from './application/use-cases/create-booking.use-case';
 import { UpdateBookingUseCase } from './application/use-cases/update-booking.use-case';
+import { CreateBookingCommand } from '@/shared/types';
 
 @Injectable()
 export class BookingsService {
@@ -18,7 +19,13 @@ export class BookingsService {
   ) {}
 
   async create(dto: CreateBookingDto, clientId: string) {
-    return this.createBookingUseCase.execute(dto, clientId);
+    const command: CreateBookingCommand = {
+      flashId: dto.flashId,
+      clientId,
+      scheduledAt: new Date(dto.scheduledAt),
+    };
+
+    return this.createBookingUseCase.execute(command);
   }
 
   async findAllByArtist(userId: string) {

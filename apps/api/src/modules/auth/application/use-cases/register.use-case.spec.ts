@@ -35,11 +35,11 @@ describe('RegisterUseCase', () => {
     mockPrisma.user.findUnique.mockResolvedValue(null);
     mockPrisma.user.create.mockResolvedValue({ id: 'user-1' });
 
-    const result = await useCase.execute(
-      'test@test.com',
-      'password123',
-      'tenant-1',
-    );
+    const result = await useCase.execute({
+      email: 'test@test.com',
+      password: 'password123',
+      tenantId: 'tenant-1',
+    });
 
     expect(result).toHaveProperty('message');
     expect(mockPrisma.user.create).toHaveBeenCalled();
@@ -70,7 +70,11 @@ describe('RegisterUseCase', () => {
     mockPrisma.user.findUnique.mockResolvedValue({ id: 'existing-user' });
 
     await expect(
-      useCase.execute('test@test.com', 'password123', 'tenant-1'),
+      useCase.execute({
+        email: 'test@test.com',
+        password: 'password123',
+        tenantId: 'tenant-1',
+      }),
     ).rejects.toThrow(ConflictException);
 
     expect(mockPrisma.user.create).not.toHaveBeenCalled();

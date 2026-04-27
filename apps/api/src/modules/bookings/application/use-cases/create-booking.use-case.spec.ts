@@ -27,7 +27,7 @@ const mockBooking = {
 
 const mockPrismaService = {
   flash: {
-    findFirst: jest.fn(),
+    findUnique: jest.fn(),
     update: jest.fn(),
   },
   booking: { create: jest.fn() },
@@ -55,52 +55,47 @@ describe('CreateBookingUseCase', () => {
 
   describe('execute', () => {
     it('should create a booking and mark flash as booked', async () => {
-      mockPrismaService.flash.findFirst.mockResolvedValue(mockFlash);
+      mockPrismaService.flash.findUnique.mockResolvedValue(mockFlash);
       mockPrismaService.$transaction.mockResolvedValue([mockBooking]);
 
-      const result = await useCase.execute(
-        {
-          flashId: 'flash-id-123',
-          tenantId: 'tenant-id-123',
-          scheduledAt: '2026-05-15T14:00:00.000Z',
-        },
-        'client-id-123',
-      );
+      const result = await useCase.execute({
+        flashId: 'flash-id-123',
+        clientId: 'client-id-123',
+        scheduledAt: new Date('2026-05-15T14:00:00.000Z'),
+      });
 
       expect(result).toEqual(mockBooking);
+
+      expect(mockPrismaService.flash.findUnique).toHaveBeenCalledWith({
+        where: { id: 'flash-id-123' },
+      });
       expect(mockPrismaService.$transaction).toHaveBeenCalled();
     });
 
     it('should throw NotFoundException if flash not found', async () => {
-      mockPrismaService.flash.findFirst.mockResolvedValue(null);
+      mockPrismaService.flash.findUnique.mockResolvedValue(null);
 
       await expect(
-        useCase.execute(
-          {
-            flashId: 'wrong-id',
-            tenantId: 'tenant-id-123',
-            scheduledAt: '2026-05-15T14:00:00.000Z',
-          },
-          'client-id-123',
-        ),
+        useCase.execute({
+          flashId: 'wrong-flash-id',
+          clientId: 'client-id-123',
+          scheduledAt: new Date('2026-05-15T14:00:00.000Z'),
+        }),
       ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw BadRequestException if flash is not available', async () => {
-      mockPrismaService.flash.findFirst.mockResolvedValue({
+      mockPrismaService.flash.findUnique.mockResolvedValue({
         ...mockFlash,
         status: FlashStatus.BOOKED,
       });
 
       await expect(
-        useCase.execute(
-          {
-            flashId: 'flash-id-123',
-            tenantId: 'tenant-id-123',
-            scheduledAt: '2026-05-15T14:00:00.000Z',
-          },
-          'client-id-123',
-        ),
+        useCase.execute({
+          flashId: 'flash-id-123',
+          clientId: 'client-id-123',
+          scheduledAt: new Date('2026-05-15T14:00:00.000Z'),
+        }),
       ).rejects.toThrow(BadRequestException);
     });
   });

@@ -59,14 +59,18 @@ describe('AuthController', () => {
         password: 'password123',
         tenantId: 'tenant-123',
       };
+
+      const expectedResponse = {
+        message:
+          'Registration successful. Please check your email to verify your account.',
+      };
+
+      mockRegisterUseCase.execute.mockResolvedValue(expectedResponse);
+
       const result = await controller.register(dto);
 
-      expect(mockRegisterUseCase.execute).toHaveBeenCalledWith(
-        dto.email,
-        dto.password,
-        dto.tenantId,
-      );
-      expect(result).toHaveProperty('message');
+      expect(mockRegisterUseCase.execute).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expectedResponse);
     });
   });
 

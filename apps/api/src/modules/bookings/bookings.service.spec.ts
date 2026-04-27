@@ -60,17 +60,17 @@ describe('BookingsService', () => {
 
       const dto: CreateBookingDto = {
         flashId: 'flash-id-123',
-        tenantId: 'tenant-id-123',
         scheduledAt: '2026-05-15T14:00:00.000Z',
       };
 
       const result = await service.create(dto, 'client-id-123');
 
       expect(result).toEqual(mockBooking);
-      expect(mockCreateBookingUseCase.execute).toHaveBeenCalledWith(
-        dto,
-        'client-id-123',
-      );
+      expect(mockCreateBookingUseCase.execute).toHaveBeenCalledWith({
+        flashId: dto.flashId,
+        clientId: 'client-id-123',
+        scheduledAt: new Date(dto.scheduledAt),
+      });
     });
   });
 

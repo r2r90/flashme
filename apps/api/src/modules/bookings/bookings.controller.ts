@@ -12,12 +12,10 @@ import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Roles } from '@/shared/decorators/roles.decorator';
-import {
-  CurrentUser,
-  type AuthUser,
-} from '@/shared/decorators/current-user.decorator';
+import { CurrentUser } from '@/shared/decorators/current-user.decorator';
 import { JwtAuthGuard } from '@/shared/guards/jwt-auth.guard';
 import { RolesGuard } from '@/shared/guards/roles.guard';
+import { type AuthUser } from '@/shared/types';
 
 @Controller('bookings')
 @UseGuards(JwtAuthGuard)

@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
+import type { JwtPayload, LoginResponse, SafeUser } from '@/shared/types';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +23,7 @@ export class AuthService {
     return user;
   }
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string): Promise<LoginResponse> {
     const user = await this.validateUser(email, password);
 
     // Block login if email is not verified
@@ -34,7 +35,7 @@ export class AuthService {
 
     const { password: _password, ...safeUser } = user;
 
-    const payload = {
+    const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
       role: user.role,
@@ -51,6 +52,6 @@ export class AuthService {
       expiresIn: this.config.get('JWT_REFRESH_EXPIRES_IN'),
     });
 
-    return { accessToken, refreshToken, user: safeUser };
+    return { accessToken, refreshToken, user: safeUser as SafeUser };
   }
 }
