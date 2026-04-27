@@ -40,9 +40,7 @@
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "pm.collectionVariables.set('token', pm.response.json().accessToken)"
-                ]
+                "exec": ["pm.collectionVariables.set('token', pm.response.json().accessToken)"]
               }
             }
           ],

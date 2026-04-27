@@ -60,10 +60,7 @@ describe('BookingsController', () => {
       const result = await controller.create(dto, mockAuthUser);
 
       expect(result).toEqual(mockBooking);
-      expect(mockBookingsService.create).toHaveBeenCalledWith(
-        dto,
-        'client-id-123',
-      );
+      expect(mockBookingsService.create).toHaveBeenCalledWith(dto, 'client-id-123');
     });
   });
 
@@ -81,9 +78,7 @@ describe('BookingsController', () => {
       const result = await controller.findMyBookings(mockAuthUser);
 
       expect(result).toEqual([mockBooking]);
-      expect(mockBookingsService.findAllByClient).toHaveBeenCalledWith(
-        'client-id-123',
-      );
+      expect(mockBookingsService.findAllByClient).toHaveBeenCalledWith('client-id-123');
     });
   });
 
@@ -101,9 +96,7 @@ describe('BookingsController', () => {
       const result = await controller.findMyArtistBookings(mockAuthUser);
 
       expect(result).toEqual([mockBooking]);
-      expect(mockBookingsService.findAllByArtist).toHaveBeenCalledWith(
-        'artist-user-id-123',
-      );
+      expect(mockBookingsService.findAllByArtist).toHaveBeenCalledWith('artist-user-id-123');
     });
   });
 
@@ -121,9 +114,7 @@ describe('BookingsController', () => {
       const result = await controller.findTenantBookings(mockAuthUser);
 
       expect(result).toEqual([mockBooking]);
-      expect(mockBookingsService.findAllByTenant).toHaveBeenCalledWith(
-        'tenant-id-123',
-      );
+      expect(mockBookingsService.findAllByTenant).toHaveBeenCalledWith('tenant-id-123');
     });
   });
 
@@ -139,10 +130,7 @@ describe('BookingsController', () => {
       const result = await controller.update('booking-id-123', dto);
 
       expect(result).toEqual(updatedBooking);
-      expect(mockBookingsService.update).toHaveBeenCalledWith(
-        'booking-id-123',
-        dto,
-      );
+      expect(mockBookingsService.update).toHaveBeenCalledWith('booking-id-123', dto);
     });
   });
 });

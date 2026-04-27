@@ -10,13 +10,8 @@ export class EmailService {
   private readonly logger = new Logger(EmailService.name);
 
   constructor(private readonly configService: ConfigService) {
-    this.resend = new Resend(
-      this.configService.getOrThrow<string>('RESEND_API_KEY'),
-    );
-    this.fromEmail = this.configService.get<string>(
-      'FROM_EMAIL',
-      'onboarding@resend.dev',
-    );
+    this.resend = new Resend(this.configService.getOrThrow<string>('RESEND_API_KEY'));
+    this.fromEmail = this.configService.get<string>('FROM_EMAIL', 'onboarding@resend.dev');
   }
 
   /**
@@ -37,10 +32,7 @@ export class EmailService {
 
       this.logger.log(`Verification email sent to ${this.maskEmail(to)}`);
     } catch (error) {
-      this.logger.error(
-        `Failed to send verification email to ${this.maskEmail(to)}`,
-        error,
-      );
+      this.logger.error(`Failed to send verification email to ${this.maskEmail(to)}`, error);
     }
   }
 

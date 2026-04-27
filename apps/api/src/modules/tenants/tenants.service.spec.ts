@@ -15,10 +15,7 @@ describe('TenantsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        TenantsService,
-        { provide: PrismaService, useValue: mockPrismaService },
-      ],
+      providers: [TenantsService, { provide: PrismaService, useValue: mockPrismaService }],
     }).compile();
 
     service = module.get<TenantsService>(TenantsService);
@@ -45,9 +42,7 @@ describe('TenantsService', () => {
     it('should throw ConflictException if slug exists', async () => {
       mockPrismaService.tenant.findUnique.mockResolvedValue({ id: 'existing' });
 
-      await expect(
-        service.create('Test Studio', 'test-studio'),
-      ).rejects.toThrow(ConflictException);
+      await expect(service.create('Test Studio', 'test-studio')).rejects.toThrow(ConflictException);
     });
   });
 

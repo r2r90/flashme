@@ -43,8 +43,7 @@ export class RegisterUseCase {
     await this.emailService.sendVerificationEmail(command.email, token);
 
     return {
-      message:
-        'Registration successful. Please check your email to verify your account.',
+      message: 'Registration successful. Please check your email to verify your account.',
     };
   }
 }

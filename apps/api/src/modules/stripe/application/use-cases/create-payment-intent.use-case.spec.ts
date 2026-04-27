@@ -44,9 +44,7 @@ describe('CreatePaymentIntentUseCase', () => {
         CreatePaymentIntentUseCase,
         {
           provide: StripeClientService,
-          useValue: new StripeClientService(
-            configServiceMock as unknown as ConfigService,
-          ),
+          useValue: new StripeClientService(configServiceMock as unknown as ConfigService),
         },
         { provide: BookingsService, useValue: bookingsServiceMock },
         { provide: StripeBookingRepository, useValue: bookingRepoMock },
@@ -54,9 +52,7 @@ describe('CreatePaymentIntentUseCase', () => {
       ],
     }).compile();
 
-    useCase = module.get<CreatePaymentIntentUseCase>(
-      CreatePaymentIntentUseCase,
-    );
+    useCase = module.get<CreatePaymentIntentUseCase>(CreatePaymentIntentUseCase);
   });
 
   it('should be defined', () => {
@@ -181,10 +177,10 @@ describe('CreatePaymentIntentUseCase', () => {
         metadata: { bookingId: 'booking-1', tenantId: 'tenant-1' },
       });
 
-      expect(bookingRepoMock.savePaymentIntent).toHaveBeenCalledWith(
-        'booking-1',
-        { paymentIntentId: 'pi_test_123', depositAmount: 1500 },
-      );
+      expect(bookingRepoMock.savePaymentIntent).toHaveBeenCalledWith('booking-1', {
+        paymentIntentId: 'pi_test_123',
+        depositAmount: 1500,
+      });
     });
   });
 });

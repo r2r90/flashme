@@ -7,10 +7,7 @@ export class StripeTenantRepository implements IStripeTenantRepository {
   private readonly logger = new Logger(StripeTenantRepository.name);
   constructor(private readonly prisma: PrismaService) {}
 
-  async saveAccountId(
-    tenantId: string,
-    stripeAccountId: string,
-  ): Promise<void> {
+  async saveAccountId(tenantId: string, stripeAccountId: string): Promise<void> {
     await this.prisma.tenant.update({
       where: { id: tenantId },
       data: { stripeAccountId },

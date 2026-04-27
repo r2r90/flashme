@@ -86,10 +86,9 @@ describe('BookingsService', () => {
       });
 
       expect(result.status).toBe(BookingStatus.CONFIRMED);
-      expect(mockUpdateBookingUseCase.execute).toHaveBeenCalledWith(
-        'booking-id-123',
-        { status: BookingStatus.CONFIRMED },
-      );
+      expect(mockUpdateBookingUseCase.execute).toHaveBeenCalledWith('booking-id-123', {
+        status: BookingStatus.CONFIRMED,
+      });
     });
   });
 });

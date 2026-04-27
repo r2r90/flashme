@@ -6,9 +6,7 @@ import { StripeTenantRepository } from '../../infrastructure/repositories/stripe
 import Stripe from 'stripe';
 
 type StripeClient = InstanceType<typeof Stripe>;
-type PaymentIntent = Awaited<
-  ReturnType<StripeClient['paymentIntents']['create']>
->;
+type PaymentIntent = Awaited<ReturnType<StripeClient['paymentIntents']['create']>>;
 type Account = Awaited<ReturnType<StripeClient['accounts']['create']>>;
 
 @Injectable()
@@ -44,35 +42,21 @@ export class HandleWebhookUseCase {
   }
 
   private constructWebhookEvent(payload: Buffer, signature: string) {
-    const webhookSecret = this.config.getOrThrow<string>(
-      'STRIPE_WEBHOOK_SECRET',
-    );
+    const webhookSecret = this.config.getOrThrow<string>('STRIPE_WEBHOOK_SECRET');
 
     try {
-      return this.stripeClient.client.webhooks.constructEvent(
-        payload,
-        signature,
-        webhookSecret,
-      );
+      return this.stripeClient.client.webhooks.constructEvent(payload, signature, webhookSecret);
     } catch (err) {
-      this.logger.error(
-        `Webhook signature verification failed: ${(err as Error).message}`,
-      );
+      this.logger.error(`Webhook signature verification failed: ${(err as Error).message}`);
       throw new BadRequestException('Invalid webhook signature');
     }
   }
 
-  private async onPaymentIntentSucceeded(
-    paymentIntent: PaymentIntent,
-  ): Promise<void> {
-    const booking = await this.bookingRepo.findByPaymentIntentId(
-      paymentIntent.id,
-    );
+  private async onPaymentIntentSucceeded(paymentIntent: PaymentIntent): Promise<void> {
+    const booking = await this.bookingRepo.findByPaymentIntentId(paymentIntent.id);
 
     if (!booking) {
-      this.logger.warn(
-        `No booking found for PaymentIntent ${paymentIntent.id}`,
-      );
+      this.logger.warn(`No booking found for PaymentIntent ${paymentIntent.id}`);
       return;
     }
 

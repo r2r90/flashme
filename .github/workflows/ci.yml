@@ -2,27 +2,27 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths-ignore:
-      - "**.md"
-      - "**.txt"
-      - ".gitignore"
-      - ".env.example"
-      - "docs/**"
-      - ".vscode/**"
-      - ".idea/**"
-      - "**/*.postman_collection.json"
+      - '**.md'
+      - '**.txt'
+      - '.gitignore'
+      - '.env.example'
+      - 'docs/**'
+      - '.vscode/**'
+      - '.idea/**'
+      - '**/*.postman_collection.json'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths-ignore:
-      - "**.md"
-      - "**.txt"
-      - ".gitignore"
-      - ".env.example"
-      - "docs/**"
-      - ".vscode/**"
-      - ".idea/**"
-      - "**/*.postman_collection.json"
+      - '**.md'
+      - '**.txt'
+      - '.gitignore'
+      - '.env.example'
+      - 'docs/**'
+      - '.vscode/**'
+      - '.idea/**'
+      - '**/*.postman_collection.json'
 
 jobs:
   lint:
@@ -99,7 +99,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: [ lint, typecheck, test ]
+    needs: [lint, typecheck, test]
     steps:
       - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
       - uses: pnpm/action-setup@903f9c1a6ebcba6cf41d87230be49611ac97822e

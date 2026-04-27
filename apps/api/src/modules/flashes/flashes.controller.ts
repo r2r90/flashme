@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Body,
-  Param,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, UseGuards } from '@nestjs/common';
 import { FlashesService } from './flashes.service';
 import { CreateFlashDto } from './dto/create-flash.dto';
 import { UpdateFlashStatusDto } from './dto/update-flash-status.dto';
@@ -28,9 +20,7 @@ export class FlashesController {
   }
 
   @Get('tenant/:tenantId')
-  findAllByTenant(
-    @Param('tenantId') tenantId: string,
-  ): Promise<FlashWithArtist[]> {
+  findAllByTenant(@Param('tenantId') tenantId: string): Promise<FlashWithArtist[]> {
     return this.flashesService.findAllByTenant(tenantId);
   }
 
@@ -42,10 +32,7 @@ export class FlashesController {
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ARTIST, Role.OWNER)
-  updateStatus(
-    @Param('id') id: string,
-    @Body() dto: UpdateFlashStatusDto,
-  ): Promise<Flash> {
+  updateStatus(@Param('id') id: string, @Body() dto: UpdateFlashStatusDto): Promise<Flash> {
     return this.flashesService.updateStatus(id, dto.status);
   }
 }

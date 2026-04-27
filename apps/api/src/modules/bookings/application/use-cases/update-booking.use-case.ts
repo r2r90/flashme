@@ -12,9 +12,7 @@ export class UpdateBookingUseCase {
 
     // Validate status transition if status is being updated
     if (dto.status && !canTransition(booking.status, dto.status)) {
-      throw new BadRequestException(
-        `Cannot transition from ${booking.status} to ${dto.status}`,
-      );
+      throw new BadRequestException(`Cannot transition from ${booking.status} to ${dto.status}`);
     }
 
     return this.bookingRepo.update(id, {

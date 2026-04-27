@@ -1,17 +1,9 @@
 import { BookingsService } from '@/modules/bookings/bookings.service';
-import {
-  Injectable,
-  BadRequestException,
-  ForbiddenException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, BadRequestException, ForbiddenException, Logger } from '@nestjs/common';
 import { StripeUserRepository } from '../../infrastructure/repositories/stripe-user.repository';
 import { StripeBookingRepository } from '../../infrastructure/repositories/stripe-booking.repository';
 import { StripeClientService } from '../../infrastructure/stripe-client.service';
-import {
-  CreatePaymentIntentCommand,
-  PaymentIntentResponse,
-} from '@/shared/types';
+import { CreatePaymentIntentCommand, PaymentIntentResponse } from '@/shared/types';
 
 @Injectable()
 export class CreatePaymentIntentUseCase {
@@ -24,27 +16,16 @@ export class CreatePaymentIntentUseCase {
     private readonly userRepo: StripeUserRepository,
   ) {}
 
-  async execute(
-    command: CreatePaymentIntentCommand,
-  ): Promise<PaymentIntentResponse> {
-    const booking = await this.bookingsService.findOneWithDetails(
-      command.bookingId,
-    );
+  async execute(command: CreatePaymentIntentCommand): Promise<PaymentIntentResponse> {
+    const booking = await this.bookingsService.findOneWithDetails(command.bookingId);
 
     // Guard clauses — fail fast
-    if (booking.depositPaid)
-      throw new BadRequestException('Deposit already paid');
-    if (booking.stripePaymentIntentId)
-      throw new BadRequestException('Payment already initiated');
+    if (booking.depositPaid) throw new BadRequestException('Deposit already paid');
+    if (booking.stripePaymentIntentId) throw new BadRequestException('Payment already initiated');
     if (booking.clientId !== command.userId)
       throw new ForbiddenException('You can only pay for your own bookings');
-    if (
-      !booking.tenant.stripeAccountId ||
-      !booking.tenant.stripeOnboardingDone
-    ) {
-      throw new BadRequestException(
-        'Studio has not completed Stripe onboarding',
-      );
+    if (!booking.tenant.stripeAccountId || !booking.tenant.stripeOnboardingDone) {
+      throw new BadRequestException('Studio has not completed Stripe onboarding');
     }
 
     const customerId = await this.getOrCreateCustomer({
@@ -86,9 +67,7 @@ export class CreatePaymentIntentUseCase {
 
     await this.userRepo.saveCustomerId(params.userId, customer.id);
 
-    this.logger.log(
-      `Created Stripe Customer ${customer.id} for user ${params.userId}`,
-    );
+    this.logger.log(`Created Stripe Customer ${customer.id} for user ${params.userId}`);
 
     return customer.id;
   }
@@ -104,13 +83,9 @@ export class CreatePaymentIntentUseCase {
     paymentIntentId: string;
     depositAmount: number;
   }> {
-    const depositAmount = Math.round(
-      params.flashPriceInCents * StripeClientService.DEPOSIT_RATE,
-    );
+    const depositAmount = Math.round(params.flashPriceInCents * StripeClientService.DEPOSIT_RATE);
 
-    const applicationFee = Math.round(
-      depositAmount * this.stripeClient.commissionRate,
-    );
+    const applicationFee = Math.round(depositAmount * this.stripeClient.commissionRate);
 
     const paymentIntent = await this.stripeClient.client.paymentIntents.create({
       amount: depositAmount,
@@ -124,9 +99,7 @@ export class CreatePaymentIntentUseCase {
     });
 
     if (!paymentIntent.client_secret) {
-      throw new BadRequestException(
-        'Failed to create PaymentIntent: missing client secret',
-      );
+      throw new BadRequestException('Failed to create PaymentIntent: missing client secret');
     }
 
     this.logger.log(

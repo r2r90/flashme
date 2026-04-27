@@ -14,10 +14,7 @@ export class VerifyEmailUseCase {
       throw new UnauthorizedException('Invalid verification token');
     }
 
-    if (
-      user.emailVerificationExpires &&
-      user.emailVerificationExpires < new Date()
-    ) {
+    if (user.emailVerificationExpires && user.emailVerificationExpires < new Date()) {
       throw new UnauthorizedException('Verification token has expired');
     }
 

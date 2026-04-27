@@ -43,8 +43,7 @@ export class AuthController {
     await this.resendVerificationUseCase.execute(dto.email);
     // Always return success — prevents email enumeration
     return {
-      message:
-        'If this email is registered, a verification link has been sent.',
+      message: 'If this email is registered, a verification link has been sent.',
     };
   }
 }

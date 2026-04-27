@@ -53,9 +53,7 @@ export class StartOnboardingUseCase {
       metadata: { tenantId: params.tenantId },
     });
 
-    this.logger.log(
-      `Created Connect account ${account.id} for tenant ${params.tenantId}`,
-    );
+    this.logger.log(`Created Connect account ${account.id} for tenant ${params.tenantId}`);
 
     return account.id;
   }

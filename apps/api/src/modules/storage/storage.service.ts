@@ -5,11 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  S3Client,
-  PutObjectCommand,
-  DeleteObjectCommand,
-} from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
 
@@ -29,9 +25,7 @@ const MIME_TO_EXTENSION: Record<AllowedMimeType, string> = {
 // Presigned URL expiration in seconds (5 minutes)
 const PRESIGNED_URL_EXPIRY = 300;
 
-export function isAllowedMimeType(
-  mimeType: string,
-): mimeType is AllowedMimeType {
+export function isAllowedMimeType(mimeType: string): mimeType is AllowedMimeType {
   return mimeType in MIME_TO_EXTENSION;
 }
 
@@ -50,9 +44,7 @@ export class StorageService {
       region: this.region,
       credentials: {
         accessKeyId: this.config.getOrThrow<string>('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: this.config.getOrThrow<string>(
-          'AWS_SECRET_ACCESS_KEY',
-        ),
+        secretAccessKey: this.config.getOrThrow<string>('AWS_SECRET_ACCESS_KEY'),
       },
     });
   }

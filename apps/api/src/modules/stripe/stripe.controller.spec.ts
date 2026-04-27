@@ -47,9 +47,7 @@ describe('StripeController', () => {
         tenantId: 'tenant-1',
       };
 
-      startOnboardingMock.execute.mockResolvedValue(
-        'https://connect.stripe.com/onboarding/test',
-      );
+      startOnboardingMock.execute.mockResolvedValue('https://connect.stripe.com/onboarding/test');
 
       await expect(controller.onboarding(user)).resolves.toEqual({
         onboardingUrl: 'https://connect.stripe.com/onboarding/test',
@@ -77,9 +75,7 @@ describe('StripeController', () => {
 
       createPaymentIntentMock.execute.mockResolvedValue(response);
 
-      await expect(controller.paymentIntent(dto, user)).resolves.toEqual(
-        response,
-      );
+      await expect(controller.paymentIntent(dto, user)).resolves.toEqual(response);
 
       expect(createPaymentIntentMock.execute).toHaveBeenCalledWith({
         bookingId: 'booking-1',
@@ -101,19 +97,14 @@ describe('StripeController', () => {
         received: true,
       });
 
-      expect(handleWebhookMock.execute).toHaveBeenCalledWith(
-        rawBody,
-        signature,
-      );
+      expect(handleWebhookMock.execute).toHaveBeenCalledWith(rawBody, signature);
     });
 
     it('should throw ForbiddenException when raw body is missing', async () => {
       const req = {} as RawBodyRequest<Request>;
       const signature = 'stripe-signature-test';
 
-      await expect(controller.webhook(req, signature)).rejects.toThrow(
-        ForbiddenException,
-      );
+      await expect(controller.webhook(req, signature)).rejects.toThrow(ForbiddenException);
 
       expect(handleWebhookMock.execute).not.toHaveBeenCalled();
     });

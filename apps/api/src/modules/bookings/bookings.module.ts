@@ -6,12 +6,7 @@ import { UpdateBookingUseCase } from './application/use-cases/update-booking.use
 import { PrismaBookingRepository } from './infrastructure/prisma-booking.repository';
 
 @Module({
-  providers: [
-    BookingsService,
-    CreateBookingUseCase,
-    UpdateBookingUseCase,
-    PrismaBookingRepository,
-  ],
+  providers: [BookingsService, CreateBookingUseCase, UpdateBookingUseCase, PrismaBookingRepository],
   controllers: [BookingsController],
   exports: [BookingsService],
 })
