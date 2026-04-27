@@ -47,7 +47,6 @@ describe('BookingsController', () => {
 
       const dto: CreateBookingDto = {
         flashId: 'flash-id-123',
-        tenantId: 'client-id-123',
         scheduledAt: '2026-05-15T14:00:00.000Z',
       };
 
