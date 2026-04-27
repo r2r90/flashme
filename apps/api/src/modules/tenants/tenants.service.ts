@@ -4,12 +4,13 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
+import { Tenant } from '@prisma/client';
 
 @Injectable()
 export class TenantsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(name: string, slug: string) {
+  async create(name: string, slug: string): Promise<Tenant> {
     const existing = await this.prisma.tenant.findUnique({ where: { slug } });
     if (existing) throw new ConflictException('Slug already taken');
 
@@ -18,11 +19,11 @@ export class TenantsService {
     });
   }
 
-  async findBySlug(slug: string) {
+  async findBySlug(slug: string): Promise<Tenant | null> {
     return this.prisma.tenant.findUnique({ where: { slug } });
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<Tenant> {
     const tenant = await this.prisma.tenant.findUnique({ where: { id } });
     if (!tenant) throw new NotFoundException('Tenant not found');
     return tenant;

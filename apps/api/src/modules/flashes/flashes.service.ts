@@ -1,25 +1,17 @@
 import { PrismaService } from '@/shared/prisma/prisma.service';
+import { CreateFlashCommand, FlashWithArtist } from '@/shared/types';
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { FlashStatus } from '@prisma/client';
-
-type CreateFlashInput = {
-  tenantId: string;
-  artistId: string;
-  title: string;
-  description?: string;
-  imageUrl: string;
-  price: number;
-};
+import { Flash, FlashStatus } from '@prisma/client';
 
 @Injectable()
 export class FlashesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: CreateFlashInput) {
+  async create(data: CreateFlashCommand): Promise<Flash> {
     if (data.price <= 0) {
       throw new BadRequestException('Flash price must be greater than zero');
     }
@@ -39,7 +31,7 @@ export class FlashesService {
     return this.prisma.flash.create({ data });
   }
 
-  async findAllByTenant(tenantId: string) {
+  async findAllByTenant(tenantId: string): Promise<FlashWithArtist[]> {
     return this.prisma.flash.findMany({
       where: {
         tenantId,
@@ -58,7 +50,7 @@ export class FlashesService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<FlashWithArtist> {
     const flash = await this.prisma.flash.findUnique({
       where: { id },
       include: {
@@ -79,7 +71,7 @@ export class FlashesService {
     return flash;
   }
 
-  async updateStatus(id: string, status: FlashStatus) {
+  async updateStatus(id: string, status: FlashStatus): Promise<Flash> {
     const flash = await this.prisma.flash.findUnique({
       where: { id },
       select: { id: true, status: true },

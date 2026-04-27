@@ -20,7 +20,12 @@ import { StartOnboardingUseCase } from './application/use-cases/start-onboarding
 import { CreatePaymentIntentUseCase } from './application/use-cases/create-payment-intent.use-case';
 import { HandleWebhookUseCase } from './application/use-cases/handle-webhook.use-case';
 import { CreatePaymentIntentDto } from './dto/create-payment-intent.dto';
-import type { AuthUser } from '@/shared/types';
+import type {
+  AuthUser,
+  OnboardingResponse,
+  PaymentIntentResponse,
+  WebhookResponse,
+} from '@/shared/types';
 
 @Controller('stripe')
 export class StripeController {
@@ -33,7 +38,7 @@ export class StripeController {
   @Post('onboarding')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.OWNER)
-  async onboarding(@CurrentUser() user: AuthUser) {
+  async onboarding(@CurrentUser() user: AuthUser): Promise<OnboardingResponse> {
     if (!user.tenantId) {
       throw new ForbiddenException('No tenant associated with this account');
     }
@@ -50,7 +55,7 @@ export class StripeController {
   async paymentIntent(
     @Body() dto: CreatePaymentIntentDto,
     @CurrentUser() user: AuthUser,
-  ) {
+  ): Promise<PaymentIntentResponse> {
     return this.createPaymentIntent.execute({
       bookingId: dto.bookingId,
       userId: user.id,
@@ -63,10 +68,9 @@ export class StripeController {
   async webhook(
     @Req() req: RawBodyRequest<Request>,
     @Headers('stripe-signature') signature: string,
-  ) {
+  ): Promise<WebhookResponse> {
     const rawBody = req.rawBody;
     if (!rawBody) throw new ForbiddenException('Missing raw body');
-
     await this.handleWebhook.execute(rawBody, signature);
     return { received: true };
   }

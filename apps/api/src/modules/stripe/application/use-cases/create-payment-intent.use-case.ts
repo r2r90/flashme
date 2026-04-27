@@ -8,6 +8,10 @@ import {
 import { StripeUserRepository } from '../../infrastructure/repositories/stripe-user.repository';
 import { StripeBookingRepository } from '../../infrastructure/repositories/stripe-booking.repository';
 import { StripeClientService } from '../../infrastructure/stripe-client.service';
+import {
+  CreatePaymentIntentCommand,
+  PaymentIntentResponse,
+} from '@/shared/types';
 
 @Injectable()
 export class CreatePaymentIntentUseCase {
@@ -20,13 +24,11 @@ export class CreatePaymentIntentUseCase {
     private readonly userRepo: StripeUserRepository,
   ) {}
 
-  async execute(params: {
-    bookingId: string;
-    userId: string;
-    userEmail: string;
-  }): Promise<{ clientSecret: string; depositAmount: number }> {
+  async execute(
+    command: CreatePaymentIntentCommand,
+  ): Promise<PaymentIntentResponse> {
     const booking = await this.bookingsService.findOneWithDetails(
-      params.bookingId,
+      command.bookingId,
     );
 
     // Guard clauses — fail fast
@@ -34,7 +36,7 @@ export class CreatePaymentIntentUseCase {
       throw new BadRequestException('Deposit already paid');
     if (booking.stripePaymentIntentId)
       throw new BadRequestException('Payment already initiated');
-    if (booking.clientId !== params.userId)
+    if (booking.clientId !== command.userId)
       throw new ForbiddenException('You can only pay for your own bookings');
     if (
       !booking.tenant.stripeAccountId ||
@@ -46,8 +48,8 @@ export class CreatePaymentIntentUseCase {
     }
 
     const customerId = await this.getOrCreateCustomer({
-      userId: params.userId,
-      userEmail: params.userEmail,
+      userId: command.userId,
+      userEmail: command.userEmail,
       existingCustomerId: booking.client.stripeCustomerId,
     });
 

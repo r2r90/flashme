@@ -12,6 +12,22 @@ export interface StartOnboardingCommand {
 export interface CreatePaymentIntentCommand {
   bookingId: string;
   userId: string;
+  userEmail: string;
+}
+
+/**
+ * Response from CreatePaymentIntentUseCase.
+ */
+export interface PaymentIntentResponse {
+  clientSecret: string;
+  depositAmount: number;
+}
+
+/**
+ * Response from onboarding endpoint.
+ */
+export interface OnboardingResponse {
+  onboardingUrl: string;
 }
 
 /**
@@ -22,4 +38,11 @@ export interface OnboardingStatus {
   payoutsEnabled: boolean;
   detailsSubmitted: boolean;
   onboardingDone: boolean;
+}
+
+/**
+ * Webhook acknowledgement response.
+ */
+export interface WebhookResponse {
+  received: boolean;
 }

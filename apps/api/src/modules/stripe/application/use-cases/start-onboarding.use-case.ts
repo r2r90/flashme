@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { StripeClientService } from '../../infrastructure/stripe-client.service';
 import { TenantsService } from '@/modules/tenants/tenants.service';
 import { StripeTenantRepository } from '../../infrastructure/repositories/stripe-tenant.repository';
+import { StartOnboardingCommand } from '@/shared/types/stripe.types';
 
 @Injectable()
 export class StartOnboardingUseCase {
@@ -15,8 +16,8 @@ export class StartOnboardingUseCase {
     private readonly config: ConfigService,
   ) {}
 
-  async execute(params: { tenantId: string; email: string }): Promise<string> {
-    const tenant = await this.tenantsService.findById(params.tenantId);
+  async execute(command: StartOnboardingCommand): Promise<string> {
+    const tenant = await this.tenantsService.findById(command.tenantId);
 
     if (tenant.stripeOnboardingDone) {
       throw new BadRequestException('Studio has already completed onboarding');
@@ -27,7 +28,7 @@ export class StartOnboardingUseCase {
     if (!stripeAccountId) {
       stripeAccountId = await this.createConnectAccount({
         tenantId: tenant.id,
-        email: params.email,
+        email: command.email,
         businessName: tenant.name,
       });
 
