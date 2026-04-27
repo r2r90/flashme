@@ -60,10 +60,10 @@ describe('BookingsService', () => {
       const result = await service.create(
         {
           flashId: 'flash-id-123',
-          clientId: 'client-id-123',
+          tenantId: 'tenant-id-123',
           scheduledAt: '2026-05-15T14:00:00.000Z',
         },
-        'tenant-id-123',
+        'client-id-123',
       );
 
       expect(result).toEqual(mockBooking);
