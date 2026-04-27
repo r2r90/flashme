@@ -4,11 +4,10 @@
 
 - **Frontend** : Next.js 14 App Router (apps/web)
 - **Backend** : NestJS monolithe modulaire (apps/api)
-- **BDD** : PostgreSQL (RDS) + Prisma 7 + Row-Level Security
-- **Cache** : Redis (ElastiCache)
+- **BDD** : PostgreSQL (RDS) + Prisma 7
 - **Storage** : S3 + CloudFront
 - **Paiements** : Stripe Connect (commission %)
-- **Emails** : Resend / SES
+- **Emails** : Resend
 - **SMS** : Twilio
 - **Infra** : AWS ECS Fargate + Terraform
 - **CI/CD** : GitHub Actions
@@ -16,9 +15,9 @@
 
 ## Architecture
 
-- Multi-tenant via PostgreSQL Row-Level Security
-- Monolithe modulaire NestJS (auth, tenants, bookings, flashes, payments, notifications, analytics)
-- Commission % sur chaque réservation via Stripe Connect
+- Multi-tenant (tenantId sur chaque ressource)
+- Monolithe modulaire NestJS (auth, tenants, bookings, flashes, stripe, notifications, analytics)
+- Commission 10% sur l'acompte (30% du prix du flash) via Stripe Connect
 
 ## Sprints
 
@@ -34,33 +33,55 @@
 - [x] CurrentUser decorator
 - [x] Module Tenants (create, findBySlug)
 - [x] DTOs avec validation (class-validator)
-- [x] Tests unitaires (28/28)
+- [x] Tests unitaires
 - [x] Husky + lint-staged pre-commit
-- [x] CI/CD GitHub Actions (lint, type-check, test, build)
-- [x] Git flow (feature → rebase → develop → main)
+- [x] CI/CD GitHub Actions (lint, typecheck, test, build)
+- [x] Git flow (feature → rebase → develop → merge --ff-only → main)
 
 ### ✅ Sprint 2 — Core Booking
 
 - [x] Module Flashes (create, catalogue, findOne, updateStatus)
 - [x] Module Bookings (create, findByArtist, findByClient, update)
+- [x] RBAC (RolesGuard, @Roles decorator, Role.OWNER/ARTIST/CLIENT)
+- [x] Upload images S3 (presigned URLs, CloudFront)
 - [x] Transaction atomique (booking + flash status)
 - [x] Postman collection
 
-### ⏳ Sprint 3 — Monétisation
+### ✅ Sprint 3 — Monétisation
 
-- [ ] RBAC (guards par rôle)
-- [ ] Upload images S3
-- [ ] Stripe Connect (onboarding studio)
-- [ ] Paiement acompte en ligne
-- [ ] Notifications email (Resend)
-- [ ] Notifications SMS (Twilio)
+- [x] Stripe Connect onboarding studio
+- [x] Paiement acompte (PaymentIntent + commission FlashMe)
+- [x] Webhooks Stripe (account.updated, payment_intent.succeeded)
+- [x] Branch protection + CI required checks sur main
 
-### ⏳ Sprint 4 — Polish & Launch
+### ⏳ Sprint 4 — Notifications backend
 
-- [ ] Dashboard analytics artiste
-- [ ] Terraform AWS (ECS, RDS, S3, CloudFront)
+- [ ] Confirmation email au signup (vérification email)
+- [ ] Email confirmation booking client
+- [ ] Email notification artiste (nouvelle réservation)
+- [ ] SMS rappel rendez-vous (Twilio)
+
+### ⏳ Sprint 5 — Frontend
+
+- [ ] Setup Next.js (Tailwind, shadcn/ui, React Query, Zustand)
+- [ ] Pages auth (signup, login, verify email)
+- [ ] Dashboard studio owner (onboarding Stripe, gestion flashes)
+- [ ] Catalogue flashes public (par studio/slug)
+- [ ] Flow réservation client (choix flash → date → paiement Stripe)
+- [ ] Dashboard artiste (bookings, revenus)
+
+### ⏳ Sprint 6 — Infra & Production
+
+- [ ] Terraform AWS (ECS Fargate, RDS, S3, CloudFront)
+- [ ] Staging environment
 - [ ] Monitoring (CloudWatch + Sentry)
-- [ ] Staging → Production
+- [ ] Production launch
+
+### ⏳ Sprint 7 — Post-launch
+
+- [ ] Tests E2E Playwright (flow complet signup → booking → paiement)
+- [ ] Dashboard analytics owner
+- [ ] Optimisations performance
 
 ## Ports locaux
 
@@ -76,9 +97,10 @@
 - `cd packages/database && npx prisma generate` — générer le client Prisma
 - `cd packages/database && npx prisma migrate dev` — nouvelle migration
 - `cd packages/database && npx prisma studio` — GUI base de données
-- `cd apps/api && pnpm test` — lancer les tests
+- `pnpm --filter api test` — lancer les tests
 
 ## Git Flow
 
-- `feature/*` → rebase → `develop` → `main`
-- `git rebase develop` → `git push --force-with-lease` → `git merge --ff-only`
+- `feature/*` → rebase sur develop → merge --ff-only sur main
+- Ne jamais force push sur `main` ou `develop`
+- Garder les branches feature sur origin (historique visible)
