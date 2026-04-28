@@ -39,7 +39,10 @@ describe('CreateBookingUseCase', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CreateBookingUseCase, { provide: PrismaService, useValue: mockPrismaService }],
+      providers: [
+        CreateBookingUseCase,
+        { provide: PrismaService, useValue: mockPrismaService },
+      ],
     }).compile();
 
     useCase = module.get<CreateBookingUseCase>(CreateBookingUseCase);

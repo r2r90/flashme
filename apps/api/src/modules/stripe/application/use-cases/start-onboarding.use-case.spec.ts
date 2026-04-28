@@ -44,7 +44,9 @@ describe('StartOnboardingUseCase', () => {
         { provide: ConfigService, useValue: configServiceMock },
         {
           provide: StripeClientService,
-          useValue: new StripeClientService(configServiceMock as unknown as ConfigService),
+          useValue: new StripeClientService(
+            configServiceMock as unknown as ConfigService,
+          ),
         },
         { provide: TenantsService, useValue: tenantsServiceMock },
         { provide: StripeTenantRepository, useValue: tenantRepoMock },
@@ -100,12 +102,17 @@ describe('StartOnboardingUseCase', () => {
         metadata: { tenantId: 'tenant-1' },
       });
 
-      expect(tenantRepoMock.saveAccountId).toHaveBeenCalledWith('tenant-1', 'acct_test_123');
+      expect(tenantRepoMock.saveAccountId).toHaveBeenCalledWith(
+        'tenant-1',
+        'acct_test_123',
+      );
 
       expect(stripeAccountLinksCreateMock).toHaveBeenCalledWith({
         account: 'acct_test_123',
-        return_url: 'http://localhost:3000/onboarding/success?tenantId=tenant-1',
-        refresh_url: 'http://localhost:3000/onboarding/refresh?tenantId=tenant-1',
+        return_url:
+          'http://localhost:3000/onboarding/success?tenantId=tenant-1',
+        refresh_url:
+          'http://localhost:3000/onboarding/refresh?tenantId=tenant-1',
         type: 'account_onboarding',
       });
     });

@@ -47,11 +47,17 @@ describe('RolesGuard', () => {
     expect(guard.canActivate(context)).toBe(true);
   });
 
-  it.each([[Role.ARTIST], [Role.OWNER]])('should allow %s to access ARTIST/OWNER route', (role) => {
-    mockReflector.getAllAndOverride.mockReturnValue([Role.ARTIST, Role.OWNER]);
-    const context = createMockContext(role);
-    expect(guard.canActivate(context)).toBe(true);
-  });
+  it.each([[Role.ARTIST], [Role.OWNER]])(
+    'should allow %s to access ARTIST/OWNER route',
+    (role) => {
+      mockReflector.getAllAndOverride.mockReturnValue([
+        Role.ARTIST,
+        Role.OWNER,
+      ]);
+      const context = createMockContext(role);
+      expect(guard.canActivate(context)).toBe(true);
+    },
+  );
 
   it('should deny CLIENT access to ARTIST route', () => {
     mockReflector.getAllAndOverride.mockReturnValue([Role.ARTIST, Role.OWNER]);
@@ -75,9 +81,9 @@ describe('RolesGuard', () => {
     mockReflector.getAllAndOverride.mockReturnValue([Role.CLIENT]);
     const context = createMockContext(Role.CLIENT);
     guard.canActivate(context);
-    expect(mockReflector.getAllAndOverride).toHaveBeenCalledWith(expect.anything(), [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    expect(mockReflector.getAllAndOverride).toHaveBeenCalledWith(
+      expect.anything(),
+      [context.getHandler(), context.getClass()],
+    );
   });
 });

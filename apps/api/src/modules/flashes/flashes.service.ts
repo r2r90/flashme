@@ -1,6 +1,10 @@
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { CreateFlashCommand, FlashWithArtist } from '@/shared/types';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Flash, FlashStatus } from '@prisma/client';
 
 @Injectable()

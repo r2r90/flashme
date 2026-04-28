@@ -9,10 +9,15 @@ export class StripeClientService {
   static readonly DEPOSIT_RATE = 0.3;
 
   constructor(private readonly config: ConfigService) {
-    this.client = new Stripe(this.config.getOrThrow<string>('STRIPE_SECRET_KEY'), {
-      typescript: true,
-    });
+    this.client = new Stripe(
+      this.config.getOrThrow<string>('STRIPE_SECRET_KEY'),
+      {
+        typescript: true,
+      },
+    );
 
-    this.commissionRate = parseFloat(this.config.getOrThrow<string>('STRIPE_COMMISSION_RATE'));
+    this.commissionRate = parseFloat(
+      this.config.getOrThrow<string>('STRIPE_COMMISSION_RATE'),
+    );
   }
 }

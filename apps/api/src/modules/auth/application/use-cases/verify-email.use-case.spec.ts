@@ -15,7 +15,10 @@ describe('VerifyEmailUseCase', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VerifyEmailUseCase, { provide: PrismaService, useValue: mockPrisma }],
+      providers: [
+        VerifyEmailUseCase,
+        { provide: PrismaService, useValue: mockPrisma },
+      ],
     }).compile();
 
     useCase = module.get<VerifyEmailUseCase>(VerifyEmailUseCase);
@@ -51,7 +54,9 @@ describe('VerifyEmailUseCase', () => {
   it('should throw if token is invalid', async () => {
     mockPrisma.user.findUnique.mockResolvedValue(null);
 
-    await expect(useCase.execute('bad-token')).rejects.toThrow(UnauthorizedException);
+    await expect(useCase.execute('bad-token')).rejects.toThrow(
+      UnauthorizedException,
+    );
   });
 
   it('should throw if token is expired', async () => {
@@ -61,7 +66,9 @@ describe('VerifyEmailUseCase', () => {
       emailVerificationExpires: pastDate,
     });
 
-    await expect(useCase.execute('expired-token')).rejects.toThrow(UnauthorizedException);
+    await expect(useCase.execute('expired-token')).rejects.toThrow(
+      UnauthorizedException,
+    );
     expect(mockPrisma.user.update).not.toHaveBeenCalled();
   });
 });

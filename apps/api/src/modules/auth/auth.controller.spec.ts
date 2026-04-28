@@ -15,7 +15,8 @@ const mockAuthService = {
 
 const mockRegisterUseCase = {
   execute: jest.fn().mockResolvedValue({
-    message: 'Registration successful. Please check your email to verify your account.',
+    message:
+      'Registration successful. Please check your email to verify your account.',
   }),
 };
 
@@ -60,7 +61,8 @@ describe('AuthController', () => {
       };
 
       const expectedResponse = {
-        message: 'Registration successful. Please check your email to verify your account.',
+        message:
+          'Registration successful. Please check your email to verify your account.',
       };
 
       mockRegisterUseCase.execute.mockResolvedValue(expectedResponse);
@@ -76,7 +78,9 @@ describe('AuthController', () => {
     it('should call VerifyEmailUseCase and return success message', async () => {
       const result = await controller.verifyEmail({ token: 'valid-token' });
 
-      expect(mockVerifyEmailUseCase.execute).toHaveBeenCalledWith('valid-token');
+      expect(mockVerifyEmailUseCase.execute).toHaveBeenCalledWith(
+        'valid-token',
+      );
       expect(result).toHaveProperty('message');
     });
   });
@@ -87,7 +91,9 @@ describe('AuthController', () => {
         email: 'test@test.com',
       });
 
-      expect(mockResendVerificationUseCase.execute).toHaveBeenCalledWith('test@test.com');
+      expect(mockResendVerificationUseCase.execute).toHaveBeenCalledWith(
+        'test@test.com',
+      );
       expect(result).toHaveProperty('message');
     });
   });

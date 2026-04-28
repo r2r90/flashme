@@ -1,8 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { StorageService } from './storage.service';
 import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // Mock AWS SDK modules before any imports use them
@@ -10,9 +17,13 @@ jest.mock('@aws-sdk/client-s3');
 jest.mock('@aws-sdk/s3-request-presigner');
 
 // Type the mocked function for strict usage — no `any` needed
-const mockGetSignedUrl = getSignedUrl as jest.MockedFunction<typeof getSignedUrl>;
+const mockGetSignedUrl = getSignedUrl as jest.MockedFunction<
+  typeof getSignedUrl
+>;
 
-mockGetSignedUrl.mockResolvedValue('https://mock-presigned-url.s3.amazonaws.com' as string);
+mockGetSignedUrl.mockResolvedValue(
+  'https://mock-presigned-url.s3.amazonaws.com' as string,
+);
 const mockSend = jest.fn();
 
 // Mock S3Client constructor to return our controlled mock
@@ -42,11 +53,16 @@ describe('StorageService', () => {
     jest.clearAllMocks();
 
     // Reset default mock behavior before each test
-    mockGetSignedUrl.mockResolvedValue('https://mock-presigned-url.s3.amazonaws.com');
+    mockGetSignedUrl.mockResolvedValue(
+      'https://mock-presigned-url.s3.amazonaws.com',
+    );
     mockSend.mockResolvedValue({});
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [StorageService, { provide: ConfigService, useValue: mockConfigService }],
+      providers: [
+        StorageService,
+        { provide: ConfigService, useValue: mockConfigService },
+      ],
     }).compile();
 
     service = module.get<StorageService>(StorageService);
@@ -61,28 +77,37 @@ describe('StorageService', () => {
   // ──────────────────────────────────────────────
   describe('getPresignedUploadUrl', () => {
     it('should return an uploadUrl and a key with correct format', async () => {
-      const result = await service.getPresignedUploadUrl('flashes', 'image/jpeg');
+      const result = await service.getPresignedUploadUrl(
+        'flashes',
+        'image/jpeg',
+      );
 
-      expect(result.uploadUrl).toBe('https://mock-presigned-url.s3.amazonaws.com');
+      expect(result.uploadUrl).toBe(
+        'https://mock-presigned-url.s3.amazonaws.com',
+      );
       // Key format: folder/uuid.extension
       expect(result.key).toMatch(/^flashes\/[0-9a-f-]{36}\.jpg$/);
     });
 
     it('should generate .png extension for image/png', async () => {
-      const result = await service.getPresignedUploadUrl('flashes', 'image/png');
+      const result = await service.getPresignedUploadUrl(
+        'flashes',
+        'image/png',
+      );
       expect(result.key).toMatch(/\.png$/);
     });
 
     it('should generate .webp extension for image/webp', async () => {
-      const result = await service.getPresignedUploadUrl('avatars', 'image/webp');
+      const result = await service.getPresignedUploadUrl(
+        'avatars',
+        'image/webp',
+      );
       expect(result.key).toMatch(/^avatars\/.*\.webp$/);
     });
 
     it('should accept "studios" as a valid folder', async () => {
-      const result: { uploadUrl: string; key: string } = await service.getPresignedUploadUrl(
-        'studios',
-        'image/jpeg',
-      );
+      const result: { uploadUrl: string; key: string } =
+        await service.getPresignedUploadUrl('studios', 'image/jpeg');
       expect(result.key).toMatch(/^studios\//);
     });
 
@@ -107,14 +132,10 @@ describe('StorageService', () => {
     });
 
     it('should generate unique keys for consecutive calls', async () => {
-      const result1: { uploadUrl: string; key: string } = await service.getPresignedUploadUrl(
-        'flashes',
-        'image/jpeg',
-      );
-      const result2: { uploadUrl: string; key: string } = await service.getPresignedUploadUrl(
-        'flashes',
-        'image/jpeg',
-      );
+      const result1: { uploadUrl: string; key: string } =
+        await service.getPresignedUploadUrl('flashes', 'image/jpeg');
+      const result2: { uploadUrl: string; key: string } =
+        await service.getPresignedUploadUrl('flashes', 'image/jpeg');
 
       expect(result1.key).not.toBe(result2.key);
     });
@@ -122,33 +143,33 @@ describe('StorageService', () => {
     // ── Validation errors ──
 
     it('should throw BadRequestException for invalid folder', async () => {
-      await expect(service.getPresignedUploadUrl('../../etc', 'image/jpeg')).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.getPresignedUploadUrl('../../etc', 'image/jpeg'),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException for empty folder', async () => {
-      await expect(service.getPresignedUploadUrl('', 'image/jpeg')).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.getPresignedUploadUrl('', 'image/jpeg'),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException for unknown folder', async () => {
-      await expect(service.getPresignedUploadUrl('documents', 'image/jpeg')).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.getPresignedUploadUrl('documents', 'image/jpeg'),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException for unsupported MIME type', async () => {
-      await expect(service.getPresignedUploadUrl('flashes', 'image/gif')).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.getPresignedUploadUrl('flashes', 'image/gif'),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException for non-image MIME type', async () => {
-      await expect(service.getPresignedUploadUrl('flashes', 'application/pdf')).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.getPresignedUploadUrl('flashes', 'application/pdf'),
+      ).rejects.toThrow(BadRequestException);
     });
 
     // ── S3 errors ──
@@ -156,9 +177,9 @@ describe('StorageService', () => {
     it('should throw InternalServerErrorException when getSignedUrl fails', async () => {
       mockGetSignedUrl.mockRejectedValueOnce(new Error('S3 unavailable'));
 
-      await expect(service.getPresignedUploadUrl('flashes', 'image/jpeg')).rejects.toThrow(
-        InternalServerErrorException,
-      );
+      await expect(
+        service.getPresignedUploadUrl('flashes', 'image/jpeg'),
+      ).rejects.toThrow(InternalServerErrorException);
     });
   });
 
@@ -196,12 +217,16 @@ describe('StorageService', () => {
   describe('getPublicUrl', () => {
     it('should build correct S3 public URL', () => {
       const url = service.getPublicUrl('flashes/abc-123.jpg');
-      expect(url).toBe('https://test-bucket.s3.eu-west-3.amazonaws.com/flashes/abc-123.jpg');
+      expect(url).toBe(
+        'https://test-bucket.s3.eu-west-3.amazonaws.com/flashes/abc-123.jpg',
+      );
     });
 
     it('should handle keys with nested paths', () => {
       const url = service.getPublicUrl('studios/sub/image.png');
-      expect(url).toBe('https://test-bucket.s3.eu-west-3.amazonaws.com/studios/sub/image.png');
+      expect(url).toBe(
+        'https://test-bucket.s3.eu-west-3.amazonaws.com/studios/sub/image.png',
+      );
     });
   });
 
@@ -211,9 +236,15 @@ describe('StorageService', () => {
   describe('constructor', () => {
     it('should read all required config keys on init', () => {
       expect(mockConfigService.getOrThrow).toHaveBeenCalledWith('AWS_REGION');
-      expect(mockConfigService.getOrThrow).toHaveBeenCalledWith('AWS_S3_BUCKET');
-      expect(mockConfigService.getOrThrow).toHaveBeenCalledWith('AWS_ACCESS_KEY_ID');
-      expect(mockConfigService.getOrThrow).toHaveBeenCalledWith('AWS_SECRET_ACCESS_KEY');
+      expect(mockConfigService.getOrThrow).toHaveBeenCalledWith(
+        'AWS_S3_BUCKET',
+      );
+      expect(mockConfigService.getOrThrow).toHaveBeenCalledWith(
+        'AWS_ACCESS_KEY_ID',
+      );
+      expect(mockConfigService.getOrThrow).toHaveBeenCalledWith(
+        'AWS_SECRET_ACCESS_KEY',
+      );
     });
 
     it('should initialize S3Client with correct region and credentials', () => {

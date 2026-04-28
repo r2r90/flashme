@@ -48,7 +48,9 @@ describe('HandleWebhookUseCase', () => {
         { provide: ConfigService, useValue: configServiceMock },
         {
           provide: StripeClientService,
-          useValue: new StripeClientService(configServiceMock as unknown as ConfigService),
+          useValue: new StripeClientService(
+            configServiceMock as unknown as ConfigService,
+          ),
         },
         { provide: StripeBookingRepository, useValue: bookingRepoMock },
         { provide: StripeTenantRepository, useValue: tenantRepoMock },
@@ -68,9 +70,9 @@ describe('HandleWebhookUseCase', () => {
         throw new Error('Invalid signature');
       });
 
-      await expect(useCase.execute(Buffer.from('payload'), 'invalid-signature')).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        useCase.execute(Buffer.from('payload'), 'invalid-signature'),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should handle payment_intent.succeeded and mark deposit paid', async () => {
@@ -91,7 +93,10 @@ describe('HandleWebhookUseCase', () => {
         useCase.execute(Buffer.from('payload'), 'valid-signature'),
       ).resolves.toBeUndefined();
 
-      expect(bookingRepoMock.markDepositPaid).toHaveBeenCalledWith('booking-1', 'flash-1');
+      expect(bookingRepoMock.markDepositPaid).toHaveBeenCalledWith(
+        'booking-1',
+        'flash-1',
+      );
     });
 
     it('should skip already processed payment_intent.succeeded', async () => {
@@ -128,12 +133,15 @@ describe('HandleWebhookUseCase', () => {
 
       await useCase.execute(Buffer.from('payload'), 'valid-signature');
 
-      expect(tenantRepoMock.updateOnboardingStatus).toHaveBeenCalledWith('acct_test_123', {
-        chargesEnabled: true,
-        payoutsEnabled: true,
-        detailsSubmitted: true,
-        onboardingDone: true,
-      });
+      expect(tenantRepoMock.updateOnboardingStatus).toHaveBeenCalledWith(
+        'acct_test_123',
+        {
+          chargesEnabled: true,
+          payoutsEnabled: true,
+          detailsSubmitted: true,
+          onboardingDone: true,
+        },
+      );
     });
   });
 });

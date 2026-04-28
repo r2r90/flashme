@@ -34,7 +34,10 @@ describe('FlashesService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [FlashesService, { provide: PrismaService, useValue: mockPrismaService }],
+      providers: [
+        FlashesService,
+        { provide: PrismaService, useValue: mockPrismaService },
+      ],
     }).compile();
 
     service = module.get<FlashesService>(FlashesService);
@@ -121,7 +124,9 @@ describe('FlashesService', () => {
     it('should throw NotFoundException if flash not found', async () => {
       mockPrismaService.flash.findUnique.mockResolvedValue(null);
 
-      await expect(service.findOne('non-existent-id')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('non-existent-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -129,9 +134,9 @@ describe('FlashesService', () => {
     it('should throw NotFoundException when updating a non-existent flash', async () => {
       mockPrismaService.flash.findUnique.mockResolvedValue(null);
 
-      await expect(service.updateStatus('missing-id', FlashStatus.BOOKED)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.updateStatus('missing-id', FlashStatus.BOOKED),
+      ).rejects.toThrow(NotFoundException);
 
       expect(mockPrismaService.flash.update).not.toHaveBeenCalled();
     });
@@ -142,9 +147,9 @@ describe('FlashesService', () => {
         status: FlashStatus.DONE,
       });
 
-      await expect(service.updateStatus('flash-id-123', FlashStatus.BOOKED)).rejects.toThrow(
-        'Cannot update a completed flash',
-      );
+      await expect(
+        service.updateStatus('flash-id-123', FlashStatus.BOOKED),
+      ).rejects.toThrow('Cannot update a completed flash');
 
       expect(mockPrismaService.flash.update).not.toHaveBeenCalled();
     });
@@ -160,7 +165,10 @@ describe('FlashesService', () => {
         status: FlashStatus.BOOKED,
       });
 
-      const result = await service.updateStatus('flash-id-123', FlashStatus.BOOKED);
+      const result = await service.updateStatus(
+        'flash-id-123',
+        FlashStatus.BOOKED,
+      );
 
       expect(result.status).toBe(FlashStatus.BOOKED);
     });

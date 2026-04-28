@@ -68,18 +68,18 @@ describe('AuthService', () => {
     it('should throw UnauthorizedException when user not found', async () => {
       mockUsersService.findByEmail.mockResolvedValue(null);
 
-      await expect(service.validateUser('wrong@test.com', 'password123')).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(
+        service.validateUser('wrong@test.com', 'password123'),
+      ).rejects.toThrow(UnauthorizedException);
     });
 
     it('should throw UnauthorizedException when password is wrong', async () => {
       mockUsersService.findByEmail.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      await expect(service.validateUser('test@test.com', 'wrongpassword')).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(
+        service.validateUser('test@test.com', 'wrongpassword'),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 
@@ -100,9 +100,9 @@ describe('AuthService', () => {
       mockUsersService.findByEmail.mockResolvedValue(unverifiedUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
-      await expect(service.login('test@test.com', 'password123')).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(
+        service.login('test@test.com', 'password123'),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 });

@@ -11,7 +11,12 @@ import { VerifyEmailUseCase } from './application/use-cases/verify-email.use-cas
 import { ResendVerificationUseCase } from './application/use-cases/resend-verification.use-case';
 
 @Module({
-  imports: [PassportModule, JwtModule.register({}), UsersModule, NotificationsModule],
+  imports: [
+    PassportModule,
+    JwtModule.register({}),
+    UsersModule,
+    NotificationsModule,
+  ],
   providers: [
     AuthService,
     JwtStrategy,

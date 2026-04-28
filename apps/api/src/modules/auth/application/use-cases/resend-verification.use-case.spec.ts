@@ -52,10 +52,8 @@ describe('ResendVerificationUseCase', () => {
     expect(updateArg[0].data.emailVerificationExpires).toBeInstanceOf(Date);
 
     expect(mockEmailService.sendVerificationEmail).toHaveBeenCalled();
-    const emailArg = mockEmailService.sendVerificationEmail.mock.calls[0] as unknown as [
-      string,
-      string,
-    ];
+    const emailArg = mockEmailService.sendVerificationEmail.mock
+      .calls[0] as unknown as [string, string];
     expect(emailArg[0]).toBe('test@test.com');
     expect(typeof emailArg[1]).toBe('string');
   });

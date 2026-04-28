@@ -28,7 +28,9 @@ export class AuthService {
 
     // Block login if email is not verified
     if (!user.emailVerifiedAt) {
-      throw new UnauthorizedException('Please verify your email before logging in');
+      throw new UnauthorizedException(
+        'Please verify your email before logging in',
+      );
     }
 
     const { password: _password, ...safeUser } = user;

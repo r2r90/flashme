@@ -1,4 +1,11 @@
-import { IsString, IsUUID, IsUrl, IsInt, IsOptional, Min } from 'class-validator';
+import {
+  IsString,
+  IsUUID,
+  IsUrl,
+  IsInt,
+  IsOptional,
+  Min,
+} from 'class-validator';
 
 export class CreateFlashDto {
   @IsUUID()
