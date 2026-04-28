@@ -1,5 +1,3 @@
-import type { Role } from './enums';
-
 // ── Enums ────────────────────────────────────────────────────────
 export enum Role {
   OWNER = 'OWNER',
